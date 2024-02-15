@@ -1,43 +1,83 @@
 const fs = require('fs');
+const readline = require('readline');
 
-const defaultFile = "config/default.json";
-const configFile = "config/config.json";
-var activeConfig;
+// declare config
+let config;
+
+// create the input/output text interface for first run initialization process
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+// create config json template
+let configTemplate = {
+    "app": {
+        "port": 4000
+    },
+    "db": {
+        "host": "localhost",
+        "port": 3306,
+        "dbname": "",
+        "user": "",
+        "pass": ""
+    }
+};
+
+// Series of prompts for building config file on first run.
+// Future consideration: add input validation to ensure user gives valid values.
+// Right now it will accept invalid responses and likely break the app.
+function promptForConfig() {
+    rl.question('Enter api port (default 4000): ', (port) => {
+        configTemplate.app.port = port.trim() ? parseInt(port, 10) : 4000;
+
+        rl.question('Enter database host (default "localhost"): ', (host) => {
+            configTemplate.db.host = host.trim() || 'localhost';
+            
+            rl.question('Enter database port (default 3306): ', (dbPort) => {
+                configTemplate.db.port = dbPort.trim() ? parseInt(dbPort, 10) : 3306;
+                
+                rl.question('Enter database name: ', (dbname) => {
+                    configTemplate.db.dbname = dbname.trim();
+                    
+                    rl.question('Enter database user: ', (user) => {
+                        configTemplate.db.user = user.trim();
+                        
+                        rl.question('Enter database password: ', (pass) => {
+                            configTemplate.db.pass = pass.trim();
+                            // After collecting all inputs, write to config.json
+                            writeConfig();
+                        });
+                    });
+                });
+            });
+        });
+    });
+}
+
+function writeConfig() {
+    fs.writeFile('config/config.json', JSON.stringify(configTemplate, null, 4), (err) => {
+        if (err) throw err;console.log('Configuration saved to config.json');
+        rl.close();
+    })
+}
+
+/* new checkConfig streamlined, first run initialization added */
+function checkConfig() {
+    if (!fs.existsSync('config/config.json')) {
+        console.log('No config.json found. Starting first run initialization...');
+        promptForConfig();
+        // Do not attempt to parse configFileContents here since it's not set.
+    } else {
+        console.log('Loading config.json');
+        configFileContents = fs.readFileSync('config/config.json', 'utf8');
+        // Only parse configFileContents if it's defined.
+        config = JSON.parse(configFileContents);
+    }
+}
 
 // run at startup
 checkConfig();
 
-// read and parse config file, if config.json exists, else default.json
-// default.json just for testing with config.json. will be removed later most likely
-// this will eventually become the first run initialize code as well
-
-/*
-replace this with an initialize app type function that looks for
-a config file and loads it if it exists, and creates it if it does not exist
-process should ask user for their database info.
-*/
-
-function checkConfig() {
-    if (fs.existsSync(configFile)) {
-        activeConfig = JSON.parse(fs.readFileSync(configFile));
-        console.log('Config file exists, loading: ', configFile);
-    } else {
-        activeConfig = JSON.parse(fs.readFileSync(defaultFile));
-        console.log('Config file does not exist, loading: ', defaultFile);
-        console.log('Please use default.json as a template to create config.json with your own setting parameters to connect to your database.');
-    }
-}
-
-const config = {
-    app: { port: activeConfig.app.port },
-    db: {
-        host: activeConfig.db.host,
-        user : activeConfig.db.user,
-        port : activeConfig.db.port,
-        password : activeConfig.db.pass,
-        database : activeConfig.db.dbname
-    },
-    listPerPage: 10
-}
-
+// export config to rest of app
 module.exports = config;

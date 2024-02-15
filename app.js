@@ -41,21 +41,6 @@ app.use('/system', systemRouter); //system functions
 app.use('/srd', srdRouter); //srd functions
 app.use('/users', usersRouter); //user functions
 
-/*
-connection - replace this with an initialize app type function that looks for
-a config file and loads it if it exists, and creates it if it does not exist
-process should ask user for their database info.
-Maybe store this as config.json
-*/
-/* tmp disabled
-const db = mysql.createConnection({
-    host : config.db.host,
-    user : config.db.user,
-    password : config.db.password,
-    database : config.db.database
-});
-*/
-
 // grab port as argument from commandline, else default to port in config file
 // note to self, add checking to ensure argv[2] is numeric in valid port range
 // temporarily disabled for heroku port binding
@@ -71,23 +56,16 @@ if (process.env.PORT) {
     truePort = port;
 }
 
-
-
-// create listener and output ready message to console
-/* original
-app.listen(port, () => {
-*/
-
 // modified for heroku
 app.listen(truePort, () => {
     console.log("API is ready to rock on port " + truePort);
 });
 
 // Homepage - disabled
-app.get('/', function (request, response) {
-    request.render()
+//app.get('/', function (request, response) {
+//    request.render()
     /*
     response.sendFile(path.resolve(__dirname,'html') + '/index.html');
     console.log("Home endpoint invoked.");
     */
-});
+//});
