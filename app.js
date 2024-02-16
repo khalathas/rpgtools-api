@@ -10,8 +10,10 @@ const express = require('express'),
     bodyParser = require('body-parser');
 
 // const db = require('./db'); // database connector
+console.log("Defining Config");
 const config = require('./config/config');
 // const roles = require('./roles');
+console.log("Defining Routes");
 const systemRouter = require('./routes/system');
 const srdRouter = require('./routes/srd');
 const usersRouter =require('./routes/users');
@@ -37,6 +39,7 @@ app.use(function(req, res, next) {
 */
 
 //hook up routers
+console.log("Hooking up routes");
 app.use('/system', systemRouter); //system functions
 app.use('/srd', srdRouter); //srd functions
 app.use('/users', usersRouter); //user functions
