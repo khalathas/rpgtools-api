@@ -6,8 +6,8 @@
         "host"  : "localhost",
         "port"  : 3306,
         "dbname": "rpgtools",
-	    "user"  : "raistlin",
-	    "pass"  : "MoCuso5311"
+	    "user"  : "",
+	    "pass"  : ""
 
     }
 }
