@@ -9,9 +9,6 @@ const rl = readline.createInterface({
 
 // create config json template
 const configTemplate = {
-    app: {
-        port: 4000
-    },
     db: {
         host: "localhost",
         port: 3306,
@@ -34,9 +31,6 @@ function askQuestion(query) {
 // Right now it will accept invalid responses and likely break the app.
 
 async function promptForConfig() {
-    const port = await askQuestion('Enter api port (default 4000): ');
-    configTemplate.app.port = port.trim() ? parseInt(port, 10) : 4000;
-
     const host = await askQuestion('Enter database host (default "localhost"): ');
     configTemplate.db.host = host.trim() || 'localhost';
 
