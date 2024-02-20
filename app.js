@@ -18,11 +18,9 @@ let db;
 async function setupDb() {
     // check if config exists
     const hasConfig = await configMethods.checkConfig();
-    console.log("hasConfig value: ",hasConfig);
 
     // if exists, use file, else create it and use the object returned from the create method
     const config = hasConfig ? await configMethods.getConfig() : await configMethods.createConfig();
-    console.log("config value: ",config);
 
     // set up db connector with values from config
     db = mysql.createConnection({
@@ -32,6 +30,8 @@ async function setupDb() {
         password : config.db.password,
         database : config.db.database
     });
+
+    console.log("database connector: ",db);
 
     return;
 };
