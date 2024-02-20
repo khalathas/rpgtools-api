@@ -1,7 +1,7 @@
 const express = require('express');
 const srd = express.Router();
-const config = require('../config/config');
-const db = require('../db');
+//const config = require('../config/config');
+//const db = require('../db');
 
 
 srd.get('/classes', function(request, response) {

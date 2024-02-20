@@ -65,22 +65,6 @@ function writeConfig(configTemplate) {
     })
 }
 
-/* new checkConfig streamlined, first run initialization added */
-/*
-function checkConfig() {
-    if (!fs.existsSync('config/config.json')) {
-        console.log('No config.json found. Starting first run initialization...');
-        promptForConfig();
-        // Do not attempt to parse configFileContents here since it's not set.
-    } else {
-        console.log('Loading config.json');
-        configFileContents = fs.readFileSync('config/config.json', 'utf8');
-        // Only parse configFileContents if it's defined.
-        config = JSON.parse(configFileContents);
-    }
-}
-*/
-
 const config = {};
 
 config.checkConfig = async () => fs.existsSync('config/config.json');

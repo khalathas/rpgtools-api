@@ -9,12 +9,34 @@ const mysql = require('mysql'); //add mysql2 module
 const fs = require('fs'); //add filesystem module
 const bodyParser = require('body-parser');
 
-// const db = require('./db'); // database connector
+// create config methods used below
 console.log("Defining Config");
 const configMethods = require('./config/config');
-const hasConfig = async () => await configMethods.checkConfig();
-const configFile = async () => hasConfig ? await configMethods.getConfig() : await configMethods.createConfig();
-const config = configFile();
+
+//set up db config and connection, create db config if it doesn't exist
+let db;
+async function setupDb() {
+    // check if config exists
+    const hasConfig = async () => await configMethods.checkConfig();
+
+    // if exists, use file, else create it and use the object returned from the create method
+    const config = async () => hasConfig ? await configMethods.getConfig() : await configMethods.createConfig();
+
+    // set up db connector with values from config
+    db = mysql.createConnection({
+        host : config.db.host,
+        user : config.db.user,
+        port : config.db.port,
+        password : config.db.password,
+        database : config.db.database
+    });
+
+    return;
+};
+
+// run setup function on start
+setupDb();
+
 // const roles = require('./roles');
 console.log("Defining Routes");
 const systemRouter = require('./routes/system');
@@ -43,7 +65,7 @@ app.use('/users', usersRouter); //user functions
 if (process.argv[2]) {
     port = process.argv[2];
 } else {
-    port = config.app.port;
+    port = 4000;
 }
 // make the port heroku-friendly
 if (process.env.PORT) { 

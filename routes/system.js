@@ -1,7 +1,7 @@
 const express = require('express');
 const system = express.Router();
-const config = require('../config/config');
-const db = require('../db');
+//const config = require('../config/config');
+//const db = require('../db');
 
 system.get('/test', function(request, response) {
     response.send("Test success, api is listening - using path in system/test");
