@@ -1,5 +1,5 @@
-const express = require('express'),
-    srd = express.Router();
+const express = require('express');
+const srd = express.Router();
 const config = require('../config/config');
 const db = require('../db');
 

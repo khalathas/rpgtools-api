@@ -1,5 +1,5 @@
-const express = require('express'),
-    users = express.Router();
+const express = require('express');
+const users = express.Router();
 const config = require('../config/config');
 const db = require('../db');
 

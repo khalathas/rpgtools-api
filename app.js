@@ -1,13 +1,13 @@
 // Main app file for test api
 
-// create express and initialize
-const express = require('express'), 
-    app = express(), //create app
-    cors = require('cors'), //add cors module
-    path = require('path'), //add path module
-    mysql = require('mysql'), //add mysql2 module
-    fs = require('fs'), //add filesystem module
-    bodyParser = require('body-parser');
+// create express and initialize modules
+const express = require('express'); 
+const app = express(); //create app
+const cors = require('cors'); //add cors module
+const path = require('path'); //add path module
+const mysql = require('mysql'); //add mysql2 module
+const fs = require('fs'); //add filesystem module
+const bodyParser = require('body-parser');
 
 // const db = require('./db'); // database connector
 console.log("Defining Config");
@@ -19,9 +19,7 @@ const srdRouter = require('./routes/srd');
 const usersRouter =require('./routes/users');
 
 // set cors allowed origins
-app.use(cors({
-    methods: ['GET']
-}));
+app.use(cors());
 
 app.use(express.json());
 app.use(
@@ -29,14 +27,6 @@ app.use(
         extended: true
     })
 );
-
-/* doesn't work
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-  });
-*/
 
 //hook up routers
 console.log("Hooking up routes");
