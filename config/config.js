@@ -1,9 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
 
-// declare config
-let config;
-
 // create the input/output text interface for first run initialization process
 const rl = readline.createInterface({
     input: process.stdin,
@@ -11,16 +8,16 @@ const rl = readline.createInterface({
 });
 
 // create config json template
-let configTemplate = {
-    "app": {
-        "port": 4000
+const configTemplate = {
+    app: {
+        port: 4000
     },
-    "db": {
-        "host": "localhost",
-        "port": 3306,
-        "dbname": "",
-        "user": "",
-        "pass": ""
+    db: {
+        host: "localhost",
+        port: 3306,
+        dbname: "",
+        user: "",
+        pass: ""
     }
 };
 
@@ -56,40 +53,12 @@ async function promptForConfig() {
     configTemplate.db.pass = pass.trim();
 
     // After collecting all inputs, write to config.json
-    writeConfig();
+    writeConfig(configTemplate);
+
+    return {...configTemplate};
 }
 
-/* broken, rewriting entirely, above
-function promptForConfig() {
-    rl.question('Enter api port (default 4000): ', (port) => {
-        configTemplate.app.port = port.trim() ? parseInt(port, 10) : 4000;
-
-        rl.question('Enter database host (default "localhost"): ', (host) => {
-            configTemplate.db.host = host.trim() || 'localhost';
-            
-            rl.question('Enter database port (default 3306): ', (dbPort) => {
-                configTemplate.db.port = dbPort.trim() ? parseInt(dbPort, 10) : 3306;
-                
-                rl.question('Enter database name: ', (dbname) => {
-                    configTemplate.db.dbname = dbname.trim();
-                    
-                    rl.question('Enter database user: ', (user) => {
-                        configTemplate.db.user = user.trim();
-                        
-                        rl.question('Enter database password: ', (pass) => {
-                            configTemplate.db.pass = pass.trim();
-                            // After collecting all inputs, write to config.json
-                            writeConfig();
-                        });
-                    });
-                });
-            });
-        });
-    });
-}
-*/
-
-function writeConfig() {
+function writeConfig(configTemplate) {
     fs.writeFile('config/config.json', JSON.stringify(configTemplate, null, 4), (err) => {
         if (err) throw err;console.log('Configuration saved to config.json');
         rl.close();
@@ -97,6 +66,7 @@ function writeConfig() {
 }
 
 /* new checkConfig streamlined, first run initialization added */
+/*
 function checkConfig() {
     if (!fs.existsSync('config/config.json')) {
         console.log('No config.json found. Starting first run initialization...');
@@ -109,12 +79,22 @@ function checkConfig() {
         config = JSON.parse(configFileContents);
     }
 }
+*/
 
-// run at startup
-(async function initializeConfig() {
-    await checkConfig();
-})();
+const config = {};
 
+config.checkConfig = async () => fs.existsSync('config/config.json');
+
+config.createConfig = async () => {
+    console.log('No config.json found. Starting first run initialization...');
+    return await promptForConfig({...configTemplate});
+};
+
+config.getConfig = async () => {
+    console.log('Loading config.json');
+    configFileContents = fs.readFileSync('config/config.json', 'utf8');
+    return JSON.parse(configFileContents);
+};
 
 // export config to rest of app
 module.exports = config;

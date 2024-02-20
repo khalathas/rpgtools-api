@@ -11,7 +11,10 @@ const bodyParser = require('body-parser');
 
 // const db = require('./db'); // database connector
 console.log("Defining Config");
-const config = require('./config/config');
+const configMethods = require('./config/config');
+const hasConfig = async () => await configMethods.checkConfig();
+const configFile = async () => hasConfig ? await configMethods.getConfig() : await configMethods.createConfig();
+const config = configFile();
 // const roles = require('./roles');
 console.log("Defining Routes");
 const systemRouter = require('./routes/system');
