@@ -74,7 +74,7 @@ srd.get('/spellbyfield/:field/:value', function(request, response) {
     let sql = 'SELECT * FROM spells s where s.? = ?';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql, filter);
+    let preparedQuery = db.format(sql, whereFilter);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
