@@ -68,13 +68,12 @@ srd.get('/spellbyfield/:field/:value', function(request, response) {
     // store parameters in variables
     var param = request.params.field
     var value = request.params.value;
-    var whereFilter = [param, value];
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT * FROM spells s where s.? = ?';
+    let sql = 'SELECT * FROM spells s where s.${req.params.field} = ${req.params.value}';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql, whereFilter);
+    let preparedQuery = db.format(sql);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
