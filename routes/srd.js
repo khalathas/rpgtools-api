@@ -76,7 +76,7 @@ srd.get('/spellbyfield/:field/:value', function(request, response) {
     // format to protect against sql injection
     let preparedQuery = db.format(sql,values);
 
-    db.query(preparedQuery, function(err, data, fields) {
+    db.query(sql,values, function(err, data, fields) {
         if (err) throw err;
         response.json(data);
     })
