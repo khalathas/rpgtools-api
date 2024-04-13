@@ -77,7 +77,13 @@ srd.get('/spellbyfield/:field/:value', function(request, response) {
     let preparedQuery = db.format(sql,values);
 
     db.query(sql,values, function(err, data, fields) {
-        if (err) throw err;
+        if (err) {
+            response.send({
+                _sql: sql,
+                _values: values,
+                _err: err
+            })
+            throw err;}
         response.json(data);
     })
 });
