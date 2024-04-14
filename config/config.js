@@ -1,5 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
+const filename="config.js"
 
 // create the input/output text interface for first run initialization process
 const rl = readline.createInterface({
@@ -61,6 +62,8 @@ function writeConfig(configTemplate) {
 
 const config = {};
 
+console.log(filename,": Checking config file");
+
 config.checkConfig = async () => fs.existsSync('config/config.json');
 
 config.createConfig = async () => {
@@ -69,9 +72,10 @@ config.createConfig = async () => {
 };
 
 config.getConfig = async () => {
-    console.log('Loading config.json');
+    console.log(filename,": Loading config.json");
     configFileContents = fs.readFileSync('config/config.json', 'utf8');
-    return JSON.parse(configFileContents);
+    //console.log(filename,": Config File Contents: ", configFileContents);
+    return await JSON.parse(configFileContents);
 };
 
 // export config to rest of app

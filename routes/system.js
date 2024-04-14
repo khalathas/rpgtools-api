@@ -1,4 +1,5 @@
 const express = require('express');
+const config = require('../config/config');
 const system = express.Router();
 //const config = require('../config/config');
 //const db = require('../db');
@@ -7,15 +8,6 @@ system.get('/test', function(request, response) {
     response.send("Test success, api is listening - using path in system/test");
 });
  
-system.get('/conf', function(request, response) {
-    var body = `Host: ${config.db.host}<br />
-        Port: ${config.db.port}<br />
-        User: ${config.db.user}<br />
-        Password: ${config.db.password}<br />
-        DBName: ${config.db.database}`;
-    response.status(200).send(body);
-})
-
 system.get('/tables', function(request, response) {
     var sql = 'show tables;';
     db.connect((err) => {

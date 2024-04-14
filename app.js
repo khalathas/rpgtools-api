@@ -8,9 +8,10 @@ const path = require('path'); //add path module
 const mysql = require('mysql'); //add mysql2 module
 const fs = require('fs'); //add filesystem module
 const bodyParser = require('body-parser');
+const filename = "app.js";
 
 // create config methods used below
-console.log("Defining Config");
+console.log(filename,": Defining Config");
 const configMethods = require('./config/config');
 
 //set up db config and connection, create db config if it doesn't exist
@@ -18,9 +19,11 @@ let db;
 async function setupDb() {
     // check if config exists
     const hasConfig = await configMethods.checkConfig();
+    console.log(filename,": hasConfig : ",hasConfig);
 
     // if exists, use file, else create it and use the object returned from the create method
     const config = hasConfig ? await configMethods.getConfig() : await configMethods.createConfig();
+    console.log(filename,": current config db host : ",config.db.host);
 
     // set up db connector with values from config
     db = mysql.createConnection({
@@ -31,16 +34,17 @@ async function setupDb() {
         database : config.db.database
     });
 
-    console.log("database connector: ",db);
+    //console.log(filename,": database connector: ",db);
 
-    return;
+    return db;
 };
 
 // run setup function on start
-setupDb();
+db = setupDb().then(console.log("Setup Complete"));
+//console.log(filename,": current config: ",config)
 
 // const roles = require('./roles');
-console.log("Defining Routes");
+console.log(filename,": Defining Routes");
 const systemRouter = require('./routes/system');
 const srdRouter = require('./routes/srd');
 const usersRouter =require('./routes/users');
@@ -56,7 +60,7 @@ app.use(
 );
 
 //hook up routers
-console.log("Hooking up routes");
+console.log(filename,": Hooking up routes");
 app.use('/system', systemRouter); //system functions
 app.use('/srd', srdRouter); //srd functions
 app.use('/users', usersRouter); //user functions
@@ -78,8 +82,14 @@ if (process.env.PORT) {
 
 // modified for heroku
 app.listen(truePort, () => {
-    console.log("API is ready to rock on port " + truePort);
+    console.log(filename,": API is ready to rock on port " + truePort);
 });
+
+app.get('/db', function(request, response) {
+    console.log(filename," : db object: ",db);
+    response.send("check console for object");
+});
+  
 
 // Homepage - disabled
 //app.get('/', function (request, response) {
