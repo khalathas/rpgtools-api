@@ -7,7 +7,8 @@ const db = require('../db');
 srd.get('/classes', function(request, response) {
 
     let sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
-    db.query(sql, function(err, data, fields) {
+    let preparedQuery = db.format(sql);
+    db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
         response.json(data);
     });
@@ -21,7 +22,7 @@ srd.get('/spells', function(request, response) {
     // format to protect against sql injection
     let preparedQuery = db.format(sql);
 
-    db.query(sql, function(err, data, fields) {
+    db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
         response.json(data);
     })
@@ -115,7 +116,7 @@ srd.post('/scratchpad', function(request, response) {
     let preparedQuery = db.format(sql, [values]);
 
     // build query execution
-    db.query(sql, function(err, result) {
+    db.query(preparedQuery, function(err, result) {
         if (err) throw err;
         response.json({
             status: 200,
@@ -126,6 +127,21 @@ srd.post('/scratchpad', function(request, response) {
 
 });
 
+// Get all from scratchpad
+srd.get('/scratchpad', function(request, response) {
+
+    // build sql statement with variable placeholders
+    let sql = 'SELECT * FROM scratchpad';
+
+    // format to protect against sql injection
+    let preparedQuery = db.format(sql);
+
+    db.query(preparedQuery, function(err, data, fields) {
+        if (err) throw err;
+        response.json(data);
+    })
+});
+
 
 // Truncate scratchpad to start over
 
@@ -133,9 +149,11 @@ srd.post('/clearscratch', function(request, response) {
 
     let sql = 'TRUNCATE TABLE scratchpad';
 
-    db.query(sql, function(err, result) {
+    let preparedQuery = db.format(sql);
+
+    db.query(preparedQuery, function(err, result) {
         if (err) throw err;
-        response.send(200);
+        response.sendStatus;
     });
 
 });
