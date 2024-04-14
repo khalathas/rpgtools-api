@@ -26,7 +26,7 @@ async function setupDb() {
     console.log(filename,": current config db host : ",config.db.host);
 
     // set up db connector with values from config
-    db = mysql.createConnection({
+    dbconn = mysql.createConnection({
         host : config.db.host,
         user : config.db.user,
         port : config.db.port,
@@ -36,66 +36,68 @@ async function setupDb() {
 
     //console.log(filename,": database connector: ",db);
 
-    return db;
+    return dbconn;
 };
 
 // run setup function on start
-db = setupDb().then(console.log("Setup Complete"));
-//console.log(filename,": current config: ",config)
+db = setupDb();
+db.then(function(result) {
+    app.locals.db = db;
+    console.log(filename,": db config contains: ",db);
 
-// const roles = require('./roles');
-console.log(filename,": Defining Routes");
-const systemRouter = require('./routes/system');
-const srdRouter = require('./routes/srd');
-const usersRouter =require('./routes/users');
+    //start what used to be outside of this
 
-// set cors allowed origins
-app.use(cors());
+    console.log(filename,": Exists check, db is: ",db);
 
-app.use(express.json());
-app.use(
-    express.urlencoded({
-        extended: true
-    })
-);
+    // const roles = require('./roles');
+    console.log(filename,": Defining Routes");
+    const systemRouter = require('./routes/system');
+    const srdRouter = require('./routes/srd');
+    const usersRouter =require('./routes/users');
 
-//hook up routers
-console.log(filename,": Hooking up routes");
-app.use('/system', systemRouter); //system functions
-app.use('/srd', srdRouter); //srd functions
-app.use('/users', usersRouter); //user functions
+    // set cors allowed origins
+    app.use(cors());
 
-// grab port as argument from commandline, else default to port in config file
-// note to self, add checking to ensure argv[2] is numeric in valid port range
-// temporarily disabled for heroku port binding
-if (process.argv[2]) {
-    port = process.argv[2];
-} else {
-    port = 4000;
-}
-// make the port heroku-friendly
-if (process.env.PORT) { 
-    truePort = process.env.PORT;
-} else { 
-    truePort = port;
-}
+    app.use(express.json());
+    app.use(
+        express.urlencoded({
+            extended: true
+        })
+    );
 
-// modified for heroku
-app.listen(truePort, () => {
-    console.log(filename,": API is ready to rock on port " + truePort);
+    //hook up routers
+    console.log(filename,": Hooking up routes");
+    app.use('/system', systemRouter); //system functions
+    app.use('/srd', srdRouter); //srd functions
+    app.use('/users', usersRouter); //user functions
+
+    // grab port as argument from commandline, else default to port in config file
+    // note to self, add checking to ensure argv[2] is numeric in valid port range
+    // temporarily disabled for heroku port binding
+    if (process.argv[2]) {
+        port = process.argv[2];
+    } else {
+        port = 4000;
+    }
+    // make the port heroku-friendly
+    if (process.env.PORT) { 
+        truePort = process.env.PORT;
+    } else { 
+        truePort = port;
+    }
+
+    // modified for heroku
+    app.listen(truePort, () => {
+        console.log(filename,": API is ready to rock on port " + truePort);
+    });
+
+    app.get('/db', function(request, response) {
+        console.log(filename," : db object: ",db);
+        response.send("check console for object");
+    });
+    
+
+//end what used to be outside of this
+
 });
 
-app.get('/db', function(request, response) {
-    console.log(filename," : db object: ",db);
-    response.send("check console for object");
-});
-  
-
-// Homepage - disabled
-//app.get('/', function (request, response) {
-//    request.render()
-    /*
-    response.sendFile(path.resolve(__dirname,'html') + '/index.html');
-    console.log("Home endpoint invoked.");
-    */
-//});

@@ -9,6 +9,7 @@ system.get('/test', function(request, response) {
 });
  
 system.get('/tables', function(request, response) {
+    const db = request.app.locals.db;
     var sql = 'show tables;';
     db.connect((err) => {
         if (err) throw err;
