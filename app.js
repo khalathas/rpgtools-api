@@ -36,12 +36,12 @@ function main() {
         });
 
         // create empty config object for later
-        const config = {};
+        let config = {};
 
         // define functions
 
         // ask question, return answer, use r1 in/out interface above
-        function askQuestion(query) {
+        async function askQuestion(query) {
             return new Promise((resolve) => {
                 rl.question(query, (answer) => {
                     resolve(answer);
@@ -84,14 +84,16 @@ function main() {
         // Begin the load/create config process
         console.log(filename,": Checking config file");
 
-        if fs.existsSync('config/config.json') {
+        if (fs.existsSync('config/config.json')) {
             console.log(filename,": Loading config.json");
             configFileContents = fs.readFileSync('config/config.json', 'utf8');
             //console.log(filename,": Config File Contents: ", configFileContents);
             config = JSON.parse(configFileContents);
+            resolve(config);
         } else {
             console.log('No config.json found. Starting first run initialization...');
-            config = promptForConfig({...configTemplate});
+            config = promptForConfig();
+            resolve(config);
         }
 
         /* Old code, from when these methods are called by setupDb()
@@ -118,8 +120,66 @@ function main() {
 
 
     }).then(
-        function(resolve) {
-            console.log(config);
+        function(result) {
+            let config = result;
+            console.log(filename,": config contains: ",config);
+            let db = mysql.createConnection({
+                host : config.db.host,
+                user : config.db.user,
+                port : config.db.port,
+                password : config.db.password,
+                database : config.db.database
+            });
+
+            console.log(filename,": db config contains: ",db);
+
+            // const roles = require('./roles');
+            console.log(filename,": Defining Routes");
+            const systemRouter = require('./routes/system');
+            const srdRouter = require('./routes/srd');
+            const usersRouter =require('./routes/users');
+
+            // set cors allowed origins
+            app.use(cors());
+
+            app.use(express.json());
+            app.use(
+                express.urlencoded({
+                    extended: true
+                })
+            );
+
+            //hook up routers
+            console.log(filename,": Hooking up routes");
+            app.use('/system', systemRouter); //system functions
+            app.use('/srd', srdRouter); //srd functions
+            app.use('/users', usersRouter); //user functions
+
+            // grab port as argument from commandline, else default to port in config file
+            // note to self, add checking to ensure argv[2] is numeric in valid port range
+            // temporarily disabled for heroku port binding
+            if (process.argv[2]) {
+                port = process.argv[2];
+            } else {
+                port = 4000;
+            }
+            // make the port heroku-friendly
+            if (process.env.PORT) { 
+                truePort = process.env.PORT;
+            } else { 
+                truePort = port;
+            }
+
+            // modified for heroku
+            app.listen(truePort, () => {
+                console.log(filename,": API is ready to rock on port " + truePort);
+            });
+
+            app.get('/db', function(request, response) {
+                console.log(filename," : db object: ",db);
+                response.send("check console for object");
+            });
+
         },
     function(error) {
             console.log(error);
