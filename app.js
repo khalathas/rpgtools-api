@@ -88,10 +88,10 @@ function main() {
             console.log(filename,": Loading config.json");
             configFileContents = fs.readFileSync('config/config.json', 'utf8');
             //console.log(filename,": Config File Contents: ", configFileContents);
-            JSON.parse(configFileContents);
+            config = JSON.parse(configFileContents);
         } else {
             console.log('No config.json found. Starting first run initialization...');
-            promptForConfig({...configTemplate});
+            config = promptForConfig({...configTemplate});
         }
 
         /* Old code, from when these methods are called by setupDb()
@@ -117,11 +117,9 @@ function main() {
         console.log("Setup complete");
 
 
-
-
     }).then(
         function(resolve) {
-            console.log(resolve);
+            console.log(config);
         },
     function(error) {
             console.log(error);
