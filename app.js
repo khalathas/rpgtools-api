@@ -131,7 +131,10 @@ function main() {
                 database : config.db.database
             });
 
-            console.log(filename,": db config contains: ",db);
+            // store db in app.locals
+            app.locals.db = db;
+
+            console.log(filename,": app.locals.db config contains: ",app.locals.db);
 
             // const roles = require('./roles');
             console.log(filename,": Defining Routes");
