@@ -64,7 +64,7 @@ srd.get('/spellID/:spellID', function(request, response) {
 });
 
 //Single parameter spell search
-srd.get('/spellbyfield/:field/:value', function(request, response) {
+srd.get('/spellsbyfield/:field/:value', function(request, response) {
 
     // store parameters in variables
     var field = request.params.field;
