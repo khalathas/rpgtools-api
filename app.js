@@ -11,6 +11,18 @@ const bodyParser = require('body-parser');
 const readline = require('readline'); //add readline input module for creating config
 const filename = "app.js"; // for logging purposes
 
+// const roles = require('./roles');
+console.log(filename,": Defining Routes");
+const systemRouter = require('./routes/system');
+const srdRouter = require('./routes/srd');
+const usersRouter =require('./routes/users');
+const { createConnection } = require('net');
+
+// create empty config object for later
+let config = {};
+let db = {};
+
+
 // Main function
 function main() {
 
@@ -35,9 +47,6 @@ function main() {
             output: process.stdout
         });
 
-        // create empty config object for later
-        let config = {};
-
         // define functions
 
         // ask question, return answer, use r1 in/out interface above
@@ -51,7 +60,7 @@ function main() {
 
         /* Series of prompts for building config file on first run.
            Future consideration: add input validation to ensure user gives valid values.
-           Right now it will accept invalid responses and likely break the app. */
+           Right now it will accept invalid ress and likely break the app. */
         async function promptForConfig() {
             const host = await askQuestion('Enter database host (default "localhost"): ');
             configTemplate.db.host = host.trim() || 'localhost';
@@ -106,24 +115,45 @@ function main() {
         function(result) {
             let config = result;
             console.log(filename,": config contains: ",config);
-            let db = mysql.createConnection({
+
+            // old, create single connection
+            /*
+            db = mysql.createConnection({
                 host : config.db.host,
                 user : config.db.user,
                 port : config.db.port,
                 password : config.db.password,
                 database : config.db.database
+            });  */
+            // new, connection pooling
+            db = mysql.createPool({
+                host : config.db.host,
+                user : config.db.user,
+                port : config.db.port,
+                password : config.db.pass,
+                database : config.db.dbname
             });
+            db.getConnection((err, connection) => {
+                if (err) {
+                    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+                        console.error('Database connection was closed.')
+                    }
+                    if (err.code === 'ER_CON_COUNT_ERROR') {
+                        console.error('Database has too many connections.')
+                    }
+                    if (err.code === 'ECONNREFUSED') {
+                        console.error('Database connection was refused.')
+                    }
+                }
+                if (connection) connection.release()
+                return
+            })
 
             // store db in app.locals
+            app.locals.config = config;
             app.locals.db = db;
 
             console.log(filename,": app.locals.db config contains: ",app.locals.db);
-
-            // const roles = require('./roles');
-            console.log(filename,": Defining Routes");
-            const systemRouter = require('./routes/system');
-            const srdRouter = require('./routes/srd');
-            const usersRouter =require('./routes/users');
 
             // set cors allowed origins
             app.use(cors());
@@ -161,10 +191,24 @@ function main() {
                 console.log(filename,": API is ready to rock on port " + truePort);
             });
 
-            app.get('/db', function(request, response) {
+            app.get('/db', function(req, res) {
                 console.log(filename," : db object: ",db);
-                response.send("check console for object");
+                res.send("check console");
             });
+
+            app.get('/config', function(req, res) {
+                console.log(filename," : config object: ",app.locals.config);
+                res.send(JSON.stringify(app.locals.config));
+            });
+
+            app.get('/tables', function(req,res) {
+                let sql = 'show tables';
+                db.query(sql, function(err,result) {
+                    if (err) throw err;
+                    res.send(result);
+                })
+            });
+
 
         },
     function(error) {

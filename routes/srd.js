@@ -1,19 +1,20 @@
 const express = require('express');
+const config = require('../config/config');
 const srd = express.Router();
 //const config = require('../config/config');
 //const db = require('../db');
 
-
-srd.get('/classes', function(request, response) {
+srd.get('/classes', function(req, res) {
+    var db = req.app.locals.db;
 
     let sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
     db.query(sql, function(err, data, fields) {
         if (err) throw err;
-        response.json(data);
+        res.json(data);
     });
 });
 
-srd.get('/spells', function(request, response) {
+srd.get('/spells', function(req, res) {
 
     // build sql statement with variable placeholders
     let sql = 'SELECT * FROM spells s';
@@ -23,14 +24,14 @@ srd.get('/spells', function(request, response) {
 
     db.query(sql, function(err, data, fields) {
         if (err) throw err;
-        response.json(data);
+        res.json(data);
     })
 });
 
-srd.get('/classbybookID/:bookID', function(request, response) {
+srd.get('/classbybookID/:bookID', function(req, res) {
 
     // store parameters in variables
-    var bookID = request.params.bookID;
+    var bookID = req.params.bookID;
 
     // build sql statement with variable placeholders
     let sql = 'SELECT c.name as "Class", b.name as "Source Book" FROM classes c left join sourceBooks b on c.sourcebook = b.id where b.id = ? order by c.name asc';
@@ -40,15 +41,15 @@ srd.get('/classbybookID/:bookID', function(request, response) {
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
-        response.json(data);
+        res.json(data);
     })
 });
 
 //get spell by ID
-srd.get('/spellID/:spellID', function(request, response) {
+srd.get('/spellID/:spellID', function(req, res) {
 
     // store parameters in variables
-    var spellID = request.params.spellID;
+    var spellID = req.params.spellID;
 
     // build sql statement with variable placeholders
     let sql = 'SELECT * FROM spells s where s.id = ?';
@@ -58,23 +59,25 @@ srd.get('/spellID/:spellID', function(request, response) {
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
-        response.json(data);
+        res.json(data);
     })
 });
 
-// WIP add spells request endpoint, intended to take a json object of spell data, multiple spells
-srd.post('/addSpells', function(request, response) {
+// WIP add spells req endpoint, intended to take a json object of spell data, multiple spells
+srd.post('/addSpells', function(req, res) {
 
     console.log("Add Spells endpoint invoked.");
 
-    response.send("Add Spells endpoint invoked.");
+    res.send("Add Spells endpoint invoked.");
 });
 
 // Scratchpad POST endpoint to experiment with.  Columns are ID (autoincrement), name (varchar 50), comment (varchar 50)
 
-srd.post('/scratchpad', function(request, response) {
 
-    let body = request.body;
+//scratchpad can be rewritten as srd.route('/scratchpad').get((req,res) => {}).post((req,res) => {});
+srd.post('/scratchpad', function(req, res) {
+
+    let body = req.body;
 
     // build the values
     var values = [];
@@ -88,7 +91,7 @@ srd.post('/scratchpad', function(request, response) {
     // build query execution
     db.query(sql, function(err, result) {
         if (err) throw err;
-        response.json({
+        res.json({
             status: 200,
             message: "Data inserted successfully"
         })
@@ -100,16 +103,27 @@ srd.post('/scratchpad', function(request, response) {
 
 // Truncate scratchpad to start over
 
-srd.post('/clearscratch', function(request, response) {
+srd.post('/clearscratch', function(req, res) {
 
     let sql = 'TRUNCATE TABLE scratchpad';
 
     db.query(sql, function(err, result) {
         if (err) throw err;
-        response.send(200);
+        res.send(200);
     });
 
 });
 
+srd.get('/config', function(req,res) {
+    var config = req.app.locals.config;
+    res.send(config);
+})
 
-module.exports = srd;
+srd.get('/db', function(req,res) {
+    var db = req.app.locals.db;
+    console.log(db);
+    res.send("check console");
+})
+
+
+module.exports = srd
