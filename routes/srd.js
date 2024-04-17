@@ -75,61 +75,6 @@ srd.post('/addSpells', function(req, res) {
     res.send("Add Spells endpoint invoked.");
 });
 
-// Scratchpad POST endpoint to experiment with.  Columns are ID (autoincrement), name (varchar 50), comment (varchar 50)
-
-
-//scratchpad can be rewritten as srd.route('/scratchpad').get((req,res) => {}).post((req,res) => {});
-srd.post('/scratchpad', function(req, res) {
-    var db = req.app.locals.db;
-
-    let body = req.body;
-
-    // build the values
-    var values = [];
-    for(var i=0; i< body.length; i++)
-    values.push([body[i].name,body[i].comment]);
-
-    // build sql statement, format to offer some protection against sql injection
-    let sql = 'INSERT INTO scratchpad (name, comment) VALUES ?';
-    let preparedQuery = db.format(sql, [values]);
-
-    // build query execution
-    db.query(sql, function(err, result) {
-        if (err) throw err;
-        res.json({
-            status: 200,
-            message: "Data inserted successfully"
-        })
-
-    });
-
-});
-
-
-// Truncate scratchpad to start over
-
-srd.post('/clearscratch', function(req, res) {
-    var db = req.app.locals.db;
-
-    let sql = 'TRUNCATE TABLE scratchpad';
-
-    db.query(sql, function(err, result) {
-        if (err) throw err;
-        res.send(200);
-    });
-
-});
-
-srd.get('/config', function(req,res) {
-    var config = req.app.locals.config;
-    res.send(config);
-})
-
-srd.get('/db', function(req,res) {
-    var db = req.app.locals.db;
-    console.log(db);
-    res.send("check console");
-})
 
 
 module.exports = srd
