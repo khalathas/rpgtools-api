@@ -114,7 +114,7 @@ function main() {
     }).then(
         function(result) {
             let config = result;
-            console.log(filename,": config contains: ",config);
+            // console.log(filename,": config contains: ",config);
 
             // old, create single connection
             db = mysql.createConnection({
@@ -154,7 +154,7 @@ function main() {
             app.locals.config = config;
             app.locals.db = db;
 
-            console.log(filename,": app.locals.db config contains: ",app.locals.db);
+            // console.log(filename,": app.locals.db config contains: ",app.locals.db);
 
             // set cors allowed origins
             app.use(cors());
@@ -191,25 +191,6 @@ function main() {
             app.listen(truePort, () => {
                 console.log(filename,": API is ready to rock on port " + truePort);
             });
-
-            app.get('/db', function(req, res) {
-                console.log(filename," : db object: ",db);
-                res.send("check console");
-            });
-
-            app.get('/config', function(req, res) {
-                console.log(filename," : config object: ",app.locals.config);
-                res.send(JSON.stringify(app.locals.config));
-            });
-
-            app.get('/tables', function(req,res) {
-                let sql = 'show tables';
-                db.query(sql, function(err,result) {
-                    if (err) throw err;
-                    res.send(result);
-                })
-            });
-
 
         },
     function(error) {
