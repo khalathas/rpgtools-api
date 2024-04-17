@@ -1,5 +1,6 @@
 const express = require('express');
 const users = express.Router();
+const filename = "users.js"; // for logging purposes
 //const config = require('../config/config');
 //const db = require('../db');
 
