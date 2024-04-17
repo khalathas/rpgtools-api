@@ -67,6 +67,34 @@ srd.get('/spellID/:spellID', function(req, res) {
     })
 });
 
+//Single parameter spell search
+srd.get('/spellsbyfield/:field/:value', function(request, response) {
+
+    // store parameters in variables
+    var field = request.params.field;
+    var value = request.params.value;
+    var values = [field, ['%' + value + '%']];
+    
+
+    // build sql statement with variable placeholders
+    let sql = 'SELECT * FROM spells s where ?? LIKE ?';
+
+    // format to protect against sql injection
+    let preparedQuery = db.format(sql, values);
+
+    db.query(preparedQuery, function(err, data, fields) {
+        if (err) {
+            response.send({
+                _sql: sql,
+                _values: values,
+                _err: err
+            })
+            throw err;}
+        console.log("Query: ",preparedQuery);
+        response.json(data);
+    })
+});
+
 // WIP add spells req endpoint, intended to take a json object of spell data, multiple spells
 srd.post('/addSpells', function(req, res) {
     var db = req.app.locals.db;
