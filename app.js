@@ -108,7 +108,7 @@ function main() {
         // End promise
 
     }).finally(() => {
-        console.log("Setup complete");
+        console.log(filename,": Setup complete");
 
 
     }).then(
