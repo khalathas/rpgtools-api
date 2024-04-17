@@ -1,5 +1,6 @@
 const express = require('express');
 const srd = express.Router();
+const filename = "srd.js"; // for logging purposes
 //const config = require('../config/config');
 //const db = require('../db');
 
@@ -9,6 +10,7 @@ srd.get('/classes', function(req, res) {
     let sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
     db.query(sql, function(err, data, fields) {
         if (err) throw err;
+        console.log(filename,": Class list route sent")
         res.json(data);
     });
 });
