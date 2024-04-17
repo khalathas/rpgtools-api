@@ -117,23 +117,23 @@ function main() {
             console.log(filename,": config contains: ",config);
 
             // old, create single connection
-            /*
             db = mysql.createConnection({
-                host : config.db.host,
-                user : config.db.user,
-                port : config.db.port,
-                password : config.db.password,
-                database : config.db.database
-            });  */
-            // new, connection pooling
-            db = mysql.createPool({
                 host : config.db.host,
                 user : config.db.user,
                 port : config.db.port,
                 password : config.db.pass,
                 database : config.db.dbname
             });
-            db.getConnection((err, connection) => {
+            // new, connection pooling
+            /*
+            dbpool = mysql.createPool({
+                host : config.db.host,
+                user : config.db.user,
+                port : config.db.port,
+                password : config.db.pass,
+                database : config.db.dbname
+            });
+            db = dbpool.getConnection((err, connection) => {
                 if (err) {
                     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
                         console.error('Database connection was closed.')
@@ -148,6 +148,7 @@ function main() {
                 if (connection) connection.release()
                 return
             })
+            */
 
             // store db in app.locals
             app.locals.config = config;

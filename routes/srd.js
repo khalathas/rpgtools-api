@@ -15,6 +15,7 @@ srd.get('/classes', function(req, res) {
 });
 
 srd.get('/spells', function(req, res) {
+    var db = req.app.locals.db;
 
     // build sql statement with variable placeholders
     let sql = 'SELECT * FROM spells s';
@@ -29,6 +30,7 @@ srd.get('/spells', function(req, res) {
 });
 
 srd.get('/classbybookID/:bookID', function(req, res) {
+    var db = req.app.locals.db;
 
     // store parameters in variables
     var bookID = req.params.bookID;
@@ -47,6 +49,7 @@ srd.get('/classbybookID/:bookID', function(req, res) {
 
 //get spell by ID
 srd.get('/spellID/:spellID', function(req, res) {
+    var db = req.app.locals.db;
 
     // store parameters in variables
     var spellID = req.params.spellID;
@@ -65,6 +68,7 @@ srd.get('/spellID/:spellID', function(req, res) {
 
 // WIP add spells req endpoint, intended to take a json object of spell data, multiple spells
 srd.post('/addSpells', function(req, res) {
+    var db = req.app.locals.db;
 
     console.log("Add Spells endpoint invoked.");
 
@@ -76,6 +80,7 @@ srd.post('/addSpells', function(req, res) {
 
 //scratchpad can be rewritten as srd.route('/scratchpad').get((req,res) => {}).post((req,res) => {});
 srd.post('/scratchpad', function(req, res) {
+    var db = req.app.locals.db;
 
     let body = req.body;
 
@@ -104,6 +109,7 @@ srd.post('/scratchpad', function(req, res) {
 // Truncate scratchpad to start over
 
 srd.post('/clearscratch', function(req, res) {
+    var db = req.app.locals.db;
 
     let sql = 'TRUNCATE TABLE scratchpad';
 
