@@ -84,7 +84,7 @@ function main() {
         }
 
         function writeConfig(configTemplate) {
-            fs.writeFile('config/config.json', JSON.stringify(configTemplate, null, 4), (err) => {
+            fs.writeFile('config.json', JSON.stringify(configTemplate, null, 4), (err) => {
                 if (err) throw err;console.log('Configuration saved to config.json');
                 rl.close();
             })
@@ -93,9 +93,9 @@ function main() {
         // Begin the load/create config process
         console.log(filename,": Checking config file");
 
-        if (fs.existsSync('config/config.json')) {
+        if (fs.existsSync('config.json')) {
             console.log(filename,": Loading config.json");
-            configFileContents = fs.readFileSync('config/config.json', 'utf8');
+            configFileContents = fs.readFileSync('config.json', 'utf8');
             //console.log(filename,": Config File Contents: ", configFileContents);
             config = JSON.parse(configFileContents);
             resolve(config);
