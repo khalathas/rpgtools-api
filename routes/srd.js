@@ -68,11 +68,12 @@ srd.get('/spellID/:spellID', function(req, res) {
 });
 
 //Single parameter spell search
-srd.get('/spellsbyfield/:field/:value', function(request, response) {
+srd.get('/spellsbyfield/:field/:value', function(req, res) {
+    var db = req.app.locals.db;
 
     // store parameters in variables
-    var field = request.params.field;
-    var value = request.params.value;
+    var field = req.params.field;
+    var value = req.params.value;
     var values = [field, ['%' + value + '%']];
     
 
@@ -84,14 +85,14 @@ srd.get('/spellsbyfield/:field/:value', function(request, response) {
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) {
-            response.send({
+            res.send({
                 _sql: sql,
                 _values: values,
                 _err: err
             })
             throw err;}
         console.log("Query: ",preparedQuery);
-        response.json(data);
+        res.json(data);
     })
 });
 
