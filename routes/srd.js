@@ -8,7 +8,8 @@ srd.get('/classes', function(req, res) {
     var db = req.app.locals.db;
 
     let sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
-    db.query(sql, function(err, data, fields) {
+    let preparedQuery = db.format(sql);
+    db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
         console.log(filename,": Class list route sent")
         res.json(data);
@@ -24,7 +25,7 @@ srd.get('/spells', function(req, res) {
     // format to protect against sql injection
     let preparedQuery = db.format(sql);
 
-    db.query(sql, function(err, data, fields) {
+    db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
         res.json(data);
     })
@@ -71,7 +72,7 @@ srd.get('/spellID/:spellID', function(req, res) {
 srd.get('/spellsbyfield/:field/:value', function(req, res) {
     var db = req.app.locals.db;
 
-    // store parameters in variables
+  // store parameters in variables
     var field = req.params.field;
     var value = req.params.value;
     var values = [field, ['%' + value + '%']];
@@ -96,13 +97,13 @@ srd.get('/spellsbyfield/:field/:value', function(req, res) {
     })
 });
 
-// WIP add spells req endpoint, intended to take a json object of spell data, multiple spells
-srd.post('/addSpells', function(req, res) {
-    var db = req.app.locals.db;
+
+// WIP add spells request endpoint, intended to take a json object of spell data, multiple spells
+srd.post('/addSpells', function(request, response) {
 
     console.log("Add Spells endpoint invoked.");
 
-    res.send("Add Spells endpoint invoked.");
+    response.send("Add Spells endpoint invoked.");
 });
 
 
