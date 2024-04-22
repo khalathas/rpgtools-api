@@ -8,7 +8,7 @@ system.get('/test', function(req, res) {
 
 system.get('/tables', function(req, res) {
     const db = req.app.locals.db;
-    let sql = 'show tables;';
+    const sql = 'show tables;';
     db.connect((err) => {
         if (err) throw err;
         console.log("DB Connected on port " + config.db.port);
@@ -23,16 +23,16 @@ system.get('/tables', function(req, res) {
 system.post('/scratchpad', function(req, res) {
     const db = req.app.locals.db;
 
-    let body = req.body;
+    const body = req.body;
 
     // build the values
-    var values = [];
+    const values = [];
     for(var i=0; i< body.length; i++)
     values.push([body[i].name,body[i].comment]);
 
     // build sql statement, format to offer some protection against sql injection
-    let sql = 'INSERT INTO scratchpad (name, comment) VALUES ?';
-    let preparedQuery = db.format(sql, [values]);
+    const sql = 'INSERT INTO scratchpad (name, comment) VALUES ?';
+    const preparedQuery = db.format(sql, [values]);
 
     // build query execution
     db.query(sql, function(err, result) {
@@ -52,7 +52,7 @@ system.post('/scratchpad', function(req, res) {
 system.post('/clearscratch', function(req, res) {
     const db = req.app.locals.db;
 
-    let sql = 'TRUNCATE TABLE scratchpad';
+    const sql = 'TRUNCATE TABLE scratchpad';
 
     db.query(sql, function(err, result) {
         if (err) throw err;
@@ -65,10 +65,10 @@ system.get('/scratchpad', function(req, res) {
     const db = req.app.locals.db;
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT * FROM spells s';
+    const sql = 'SELECT * FROM spells s';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql);
+    const preparedQuery = db.format(sql);
 
     db.query(sql, function(err, data, fields) {
         if (err) throw err;
@@ -79,7 +79,7 @@ system.get('/scratchpad', function(req, res) {
     
 system.get('/errortest/:errcode', function (req, res) {
     // in this endpoint we'll listen for what error they wish to return, and return that error code, ie: 200, 401, 403, 500, etc
-    var error = req.params.errcode;
+    const error = req.params.errcode;
     res.status(error).send("Check devtools/network for appropriate error response");
 })
     
