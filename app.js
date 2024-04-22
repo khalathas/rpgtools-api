@@ -27,7 +27,7 @@ let db = {};
 function main() {
 
     // Setup config, run initialization if config does not exist
-    let promise = new Promise(function(resolve, reject) {
+    const setupConfigPromise = new Promise(function(resolve, reject) {
 
         // define templates and structures
         // create config json template
@@ -113,7 +113,7 @@ function main() {
 
     }).then(
         function(result) {
-            let config = result;
+            const config = result;
             // console.log(filename,": config contains: ",config);
 
             // old, create single connection
