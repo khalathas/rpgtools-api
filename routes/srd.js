@@ -1,8 +1,6 @@
 const express = require('express');
 const srd = express.Router();
 const filename = "srd.js"; // for logging purposes
-//const config = require('../config/config');
-//const db = require('../db');
 
 srd.get('/classes', function(req, res) {
     const db = req.app.locals.db;
