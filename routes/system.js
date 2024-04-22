@@ -1,16 +1,14 @@
 const express = require('express');
 const system = express.Router();
 const filename = "system.js"; // for logging purposes
-//const config = require('../config/config');
-//const db = require('../db');
 
 system.get('/test', function(req, res) {
     res.send("Test success, api is listening - using path in system/test");
 });
 
 system.get('/tables', function(req, res) {
-    var db = req.app.locals.db;
-    var sql = 'show tables;';
+    const db = req.app.locals.db;
+    let sql = 'show tables;';
     db.connect((err) => {
         if (err) throw err;
         console.log("DB Connected on port " + config.db.port);
@@ -23,7 +21,7 @@ system.get('/tables', function(req, res) {
 
 //scratchpad can be rewritten as srd.route('/scratchpad').get((req,res) => {}).post((req,res) => {});
 system.post('/scratchpad', function(req, res) {
-    var db = req.app.locals.db;
+    const db = req.app.locals.db;
 
     let body = req.body;
 
@@ -52,7 +50,7 @@ system.post('/scratchpad', function(req, res) {
 // Truncate scratchpad to start over
 
 system.post('/clearscratch', function(req, res) {
-    var db = req.app.locals.db;
+    const db = req.app.locals.db;
 
     let sql = 'TRUNCATE TABLE scratchpad';
 
@@ -64,7 +62,7 @@ system.post('/clearscratch', function(req, res) {
 });
 
 system.get('/scratchpad', function(req, res) {
-    var db = req.app.locals.db;
+    const db = req.app.locals.db;
 
     // build sql statement with variable placeholders
     let sql = 'SELECT * FROM spells s';
