@@ -5,7 +5,7 @@ const filename = "srd.js"; // for logging purposes
 //const db = require('../db');
 
 srd.get('/classes', function(req, res) {
-    var db = req.app.locals.db;
+    const db = req.app.locals.db;
 
     let sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
     let preparedQuery = db.format(sql);
@@ -17,7 +17,7 @@ srd.get('/classes', function(req, res) {
 });
 
 srd.get('/spells', function(req, res) {
-    var db = req.app.locals.db;
+    const db = req.app.locals.db;
 
     // build sql statement with variable placeholders
     let sql = 'SELECT * FROM spells s';
@@ -32,7 +32,7 @@ srd.get('/spells', function(req, res) {
 });
 
 srd.get('/classbybookID/:bookID', function(req, res) {
-    var db = req.app.locals.db;
+    const db = req.app.locals.db;
 
     // store parameters in variables
     var bookID = req.params.bookID;
@@ -51,7 +51,7 @@ srd.get('/classbybookID/:bookID', function(req, res) {
 
 //get spell by ID
 srd.get('/spellID/:spellID', function(req, res) {
-    var db = req.app.locals.db;
+    const db = req.app.locals.db;
 
     // store parameters in variables
     var spellID = req.params.spellID;
@@ -70,7 +70,7 @@ srd.get('/spellID/:spellID', function(req, res) {
 
 //Single parameter spell search
 srd.get('/spellsbyfield/:field/:value', function(req, res) {
-    var db = req.app.locals.db;
+    const db = req.app.locals.db;
 
   // store parameters in variables
     var field = req.params.field;
@@ -99,11 +99,11 @@ srd.get('/spellsbyfield/:field/:value', function(req, res) {
 
 
 // WIP add spells request endpoint, intended to take a json object of spell data, multiple spells
-srd.post('/addSpells', function(request, response) {
+srd.post('/addSpells', function(req, res) {
 
     console.log("Add Spells endpoint invoked.");
 
-    response.send("Add Spells endpoint invoked.");
+    res.send("Add Spells endpoint invoked.");
 });
 
 
