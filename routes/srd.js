@@ -5,8 +5,8 @@ const filename = "srd.js"; // for logging purposes
 srd.get('/classes', function(req, res) {
     const db = req.app.locals.db;
 
-    let sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
-    let preparedQuery = db.format(sql);
+    const sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
+    const preparedQuery = db.format(sql);
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
         console.log(filename,": Class list route sent")
@@ -18,10 +18,10 @@ srd.get('/spells', function(req, res) {
     const db = req.app.locals.db;
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT * FROM spells s';
+    const sql = 'SELECT * FROM spells s';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql);
+    const preparedQuery = db.format(sql);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
@@ -33,13 +33,13 @@ srd.get('/classbybookID/:bookID', function(req, res) {
     const db = req.app.locals.db;
 
     // store parameters in variables
-    var bookID = req.params.bookID;
+    const bookID = req.params.bookID;
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT c.name as "Class", b.name as "Source Book" FROM classes c left join sourceBooks b on c.sourcebook = b.id where b.id = ? order by c.name asc';
+    const sql = 'SELECT c.name as "Class", b.name as "Source Book" FROM classes c left join sourceBooks b on c.sourcebook = b.id where b.id = ? order by c.name asc';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql, [bookID]);
+    const preparedQuery = db.format(sql, [bookID]);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
@@ -52,13 +52,13 @@ srd.get('/spellID/:spellID', function(req, res) {
     const db = req.app.locals.db;
 
     // store parameters in variables
-    var spellID = req.params.spellID;
+    const spellID = req.params.spellID;
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT * FROM spells s where s.id = ?';
+    const sql = 'SELECT * FROM spells s where s.id = ?';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql, [spellID]);
+    const preparedQuery = db.format(sql, [spellID]);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
@@ -71,16 +71,16 @@ srd.get('/spellsbyfield/:field/:value', function(req, res) {
     const db = req.app.locals.db;
 
   // store parameters in variables
-    var field = req.params.field;
-    var value = req.params.value;
-    var values = [field, ['%' + value + '%']];
+    const field = req.params.field;
+    const value = req.params.value;
+    const values = [field, ['%' + value + '%']];
     
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT * FROM spells s where ?? LIKE ?';
+    const sql = 'SELECT * FROM spells s where ?? LIKE ?';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql, values);
+    const preparedQuery = db.format(sql, values);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) {
