@@ -1,38 +1,86 @@
-const express = require('express'),
-    system = express.Router();
-const config = require('../config/config');
-const db = require('../db');
+const express = require('express');
+const system = express.Router();
+const filename = "system.js"; // for logging purposes
 
-system.get('/test', function(request, response) {
-    response.send("Test success, api is listening - using path in system/test");
+system.get('/test', function(req, res) {
+    res.send("Test success, api is listening - using path in system/test");
 });
- 
-system.get('/conf', function(request, response) {
-    var body = `Host: ${config.db.host}<br />
-        Port: ${config.db.port}<br />
-        User: ${config.db.user}<br />
-        Password: ${config.db.password}<br />
-        DBName: ${config.db.database}`;
-    response.status(200).send(body);
-})
 
-system.get('/tables', function(request, response) {
-    var sql = 'show tables;';
+system.get('/tables', function(req, res) {
+    const db = req.app.locals.db;
+    const sql = 'show tables;';
     db.connect((err) => {
         if (err) throw err;
         console.log("DB Connected on port " + config.db.port);
         db.query(sql, function(err, result) {
             if (err) throw err;
-            response.status(200).send(result);
+            res.status(200).send(result);
         })
     });
 })
 
+//scratchpad can be rewritten as srd.route('/scratchpad').get((req,res) => {}).post((req,res) => {});
+system.post('/scratchpad', function(req, res) {
+    const db = req.app.locals.db;
+
+    const body = req.body;
+
+    // build the values
+    const values = [];
+    for(let i=0; i< body.length; i++)
+    values.push([body[i].name,body[i].comment]);
+
+    // build sql statement, format to offer some protection against sql injection
+    const sql = 'INSERT INTO scratchpad (name, comment) VALUES ?';
+    const preparedQuery = db.format(sql, [values]);
+
+    // build query execution
+    db.query(sql, function(err, result) {
+        if (err) throw err;
+        res.json({
+            status: 200,
+            message: "Data inserted successfully"
+        })
+
+    });
+
+});
+
+
+// Truncate scratchpad to start over
+
+system.post('/clearscratch', function(req, res) {
+    const db = req.app.locals.db;
+
+    const sql = 'TRUNCATE TABLE scratchpad';
+
+    db.query(sql, function(err, result) {
+        if (err) throw err;
+        res.send(200);
+    });
+
+});
+
+system.get('/scratchpad', function(req, res) {
+    const db = req.app.locals.db;
+
+    // build sql statement with variable placeholders
+    const sql = 'SELECT * FROM spells s';
+
+    // format to protect against sql injection
+    const preparedQuery = db.format(sql);
+
+    db.query(sql, function(err, data, fields) {
+        if (err) throw err;
+        res.json(data);
+    })
+});
+
     
-system.get('/errortest/:errcode', function (request, response) {
+system.get('/errortest/:errcode', function (req, res) {
     // in this endpoint we'll listen for what error they wish to return, and return that error code, ie: 200, 401, 403, 500, etc
-    var error = request.params.errcode;
-    response.status(error).send("Check devtools/network for appropriate error response");
+    const error = req.params.errcode;
+    res.status(error).send("Check devtools/network for appropriate error response");
 })
     
 

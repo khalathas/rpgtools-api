@@ -1,162 +1,109 @@
-const express = require('express'),
-    srd = express.Router();
-const config = require('../config/config');
-const db = require('../db');
+const express = require('express');
+const srd = express.Router();
+const filename = "srd.js"; // for logging purposes
 
+srd.get('/classes', function(req, res) {
+    const db = req.app.locals.db;
 
-srd.get('/classes', function(request, response) {
-
-    let sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
-    let preparedQuery = db.format(sql);
+    const sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
+    const preparedQuery = db.format(sql);
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
-        response.json(data);
+        console.log(filename,": Class list route sent")
+        res.json(data);
     });
 });
 
-srd.get('/spells', function(request, response) {
+srd.get('/spells', function(req, res) {
+    const db = req.app.locals.db;
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT * FROM spells s';
+    const sql = 'SELECT * FROM spells s';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql);
+    const preparedQuery = db.format(sql);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
-        response.json(data);
+        res.json(data);
     })
 });
 
-srd.get('/classbybookID/:bookID', function(request, response) {
+srd.get('/classbybookID/:bookID', function(req, res) {
+    const db = req.app.locals.db;
 
     // store parameters in variables
-    var bookID = request.params.bookID;
+    const bookID = req.params.bookID;
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT c.name as "Class", b.name as "Source Book" FROM classes c left join sourceBooks b on c.sourcebook = b.id where b.id = ? order by c.name asc';
+    const sql = 'SELECT c.name as "Class", b.name as "Source Book" FROM classes c left join sourceBooks b on c.sourcebook = b.id where b.id = ? order by c.name asc';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql, [bookID]);
+    const preparedQuery = db.format(sql, [bookID]);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
-        response.json(data);
+        res.json(data);
     })
 });
 
 //get spell by ID
-srd.get('/spellID/:spellID', function(request, response) {
+srd.get('/spellID/:spellID', function(req, res) {
+    const db = req.app.locals.db;
 
     // store parameters in variables
-    var spellID = request.params.spellID;
+    const spellID = req.params.spellID;
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT * FROM spells s where s.id = ?';
+    const sql = 'SELECT * FROM spells s where s.id = ?';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql, [spellID]);
+    const preparedQuery = db.format(sql, [spellID]);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) throw err;
-        response.json(data);
+        res.json(data);
     })
 });
 
 //Single parameter spell search
-srd.get('/spellsbyfield/:field/:value', function(request, response) {
+srd.get('/spellsbyfield/:field/:value', function(req, res) {
+    const db = req.app.locals.db;
 
-    // store parameters in variables
-    var field = request.params.field;
-    var value = request.params.value;
-    var values = [field, ['%' + value + '%']];
+  // store parameters in variables
+    const field = req.params.field;
+    const value = req.params.value;
+    const values = [field, ['%' + value + '%']];
     
 
     // build sql statement with variable placeholders
-    let sql = 'SELECT * FROM spells s where ?? LIKE ?';
+    const sql = 'SELECT * FROM spells s where ?? LIKE ?';
 
     // format to protect against sql injection
-    let preparedQuery = db.format(sql, values);
+    const preparedQuery = db.format(sql, values);
 
     db.query(preparedQuery, function(err, data, fields) {
         if (err) {
-            response.send({
+            res.send({
                 _sql: sql,
                 _values: values,
                 _err: err
             })
             throw err;}
         console.log("Query: ",preparedQuery);
-        response.json(data);
+        res.json(data);
     })
 });
 
 
 // WIP add spells request endpoint, intended to take a json object of spell data, multiple spells
-srd.post('/addSpells', function(request, response) {
+srd.post('/addSpells', function(req, res) {
 
     console.log("Add Spells endpoint invoked.");
 
-    response.send("Add Spells endpoint invoked.");
-});
-
-// Scratchpad POST endpoint to experiment with.  Columns are ID (autoincrement), name (varchar 50), comment (varchar 50)
-
-srd.post('/scratchpad', function(request, response) {
-
-    let body = request.body;
-
-    // build the values
-    var values = [];
-    for(var i=0; i< body.length; i++)
-    values.push([body[i].name,body[i].comment]);
-
-    // build sql statement, format to offer some protection against sql injection
-    let sql = 'INSERT INTO scratchpad (name, comment) VALUES ?';
-    let preparedQuery = db.format(sql, [values]);
-
-    // build query execution
-    db.query(preparedQuery, function(err, result) {
-        if (err) throw err;
-        response.json({
-            status: 200,
-            message: "Data inserted successfully"
-        })
-
-    });
-
-});
-
-// Get all from scratchpad
-srd.get('/scratchpad', function(request, response) {
-
-    // build sql statement with variable placeholders
-    let sql = 'SELECT * FROM scratchpad';
-
-    // format to protect against sql injection
-    let preparedQuery = db.format(sql);
-
-    db.query(preparedQuery, function(err, data, fields) {
-        if (err) throw err;
-        response.json(data);
-    })
+    res.send("Add Spells endpoint invoked.");
 });
 
 
-// Truncate scratchpad to start over
 
-srd.post('/clearscratch', function(request, response) {
-
-    let sql = 'TRUNCATE TABLE scratchpad';
-
-    let preparedQuery = db.format(sql);
-
-    db.query(preparedQuery, function(err, result) {
-        if (err) throw err;
-        response.sendStatus;
-    });
-
-});
-
-
-module.exports = srd;
+module.exports = srd
