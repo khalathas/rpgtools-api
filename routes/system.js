@@ -27,7 +27,7 @@ system.post('/scratchpad', function(req, res) {
 
     // build the values
     const values = [];
-    for(var i=0; i< body.length; i++)
+    for(let i=0; i< body.length; i++)
     values.push([body[i].name,body[i].comment]);
 
     // build sql statement, format to offer some protection against sql injection
