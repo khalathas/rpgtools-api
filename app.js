@@ -13,21 +13,31 @@ const filename = "app.js"; // for logging purposes
 
 // const roles = require('./roles');
 console.log(filename,": Defining Routes");
-const systemRouter = require('./routes/system');
+
+console.log(filename,": Defining SRD");
 const srdRouter = require('./routes/srd');
+
+console.log(filename,": Defining System");
+const systemRouter = require('./routes/system');
+
+console.log(filename,": Defining Users");
 const usersRouter =require('./routes/users');
-const { createConnection } = require('net');
+
+//console.log(filename,": Defining net");
+//const { createConnection } = require('net');
 
 // create empty config object for later
 let config = {};
 let db = {};
 
+console.log(filename,": Entering main function");
 
 // Main function
 function main() {
 
+    console.log(filename,": Set up config promise");
     // Setup config, run initialization if config does not exist
-    const setupConfigPromise = new Promise(function(resolve, reject) {
+    let setupConfigPromise = new Promise(function(resolve, reject) {
 
         // define templates and structures
         // create config json template
@@ -201,3 +211,4 @@ function main() {
 };
 
 
+main();
