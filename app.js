@@ -9,19 +9,9 @@ const mysql = require('mysql'); //add mysql2 module
 const fs = require('fs'); //add filesystem module
 const bodyParser = require('body-parser');
 const readline = require('readline'); //add readline input module for creating config
+// const utils = require('./utils.js'); // custom functions
 const filename = "app.js"; // for logging purposes
 
-// const roles = require('./roles');
-console.log(filename,": Defining Routes");
-
-console.log(filename,": Defining SRD");
-const srdRouter = require('./routes/srd');
-
-console.log(filename,": Defining System");
-const systemRouter = require('./routes/system');
-
-console.log(filename,": Defining Users");
-const usersRouter =require('./routes/users');
 
 //console.log(filename,": Defining net");
 //const { createConnection } = require('net');
@@ -124,47 +114,21 @@ function main() {
     }).then(
         function(result) {
             const config = result;
-            // console.log(filename,": config contains: ",config);
-
-            // old, create single connection
-            db = mysql.createConnection({
-                host : config.db.host,
-                user : config.db.user,
-                port : config.db.port,
-                password : config.db.pass,
-                database : config.db.dbname
-            });
+         
             // new, connection pooling
-            /*
             dbpool = mysql.createPool({
+                connectionLimit : 10,
                 host : config.db.host,
                 user : config.db.user,
                 port : config.db.port,
                 password : config.db.pass,
                 database : config.db.dbname
             });
-            db = dbpool.getConnection((err, connection) => {
-                if (err) {
-                    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-                        console.error('Database connection was closed.')
-                    }
-                    if (err.code === 'ER_CON_COUNT_ERROR') {
-                        console.error('Database has too many connections.')
-                    }
-                    if (err.code === 'ECONNREFUSED') {
-                        console.error('Database connection was refused.')
-                    }
-                }
-                if (connection) connection.release()
-                return
-            })
-            */
-
+            console.log(filename,": Connection Pool created");
+                        
             // store db in app.locals
             app.locals.config = config;
-            app.locals.db = db;
-
-            // console.log(filename,": app.locals.db config contains: ",app.locals.db);
+            app.locals.db = dbpool;
 
             // set cors allowed origins
             app.use(cors());
@@ -175,6 +139,18 @@ function main() {
                     extended: true
                 })
             );
+
+            // const roles = require('./roles');
+            console.log(filename,": Defining Routes");
+
+            console.log(filename,": Defining SRD");
+            const srdRouter = require('./routes/srd');
+
+            console.log(filename,": Defining System");
+            const systemRouter = require('./routes/system');
+
+            console.log(filename,": Defining Users");
+            const usersRouter =require('./routes/users');
 
             //hook up routers
             console.log(filename,": Hooking up routes");

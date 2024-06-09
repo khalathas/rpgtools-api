@@ -1,5 +1,9 @@
+// System routes, mostly for testing purposes, can likely delete, disable, or
+// lock these behind auth later when app is more fleshed out
+
 const express = require('express');
 const system = express.Router();
+const { selectQuery } = require('../utils.js');
 const filename = "system.js"; // for logging purposes
 
 system.get('/test', function(req, res) {
@@ -7,19 +11,16 @@ system.get('/test', function(req, res) {
 });
 
 system.get('/tables', function(req, res) {
-    const db = req.app.locals.db;
+    console.log(filename,": Endpoint request: /system/tables");
+
     const sql = 'show tables;';
-    db.connect((err) => {
-        if (err) throw err;
-        console.log("DB Connected on port " + config.db.port);
-        db.query(sql, function(err, result) {
-            if (err) throw err;
-            res.status(200).send(result);
-        })
-    });
+    const params = [];
+
+    selectQuery(filename,sql,params,req,res);
 })
 
 //scratchpad can be rewritten as srd.route('/scratchpad').get((req,res) => {}).post((req,res) => {});
+/*
 system.post('/scratchpad', function(req, res) {
     const db = req.app.locals.db;
 
@@ -45,10 +46,11 @@ system.post('/scratchpad', function(req, res) {
     });
 
 });
-
+*/
 
 // Truncate scratchpad to start over
 
+/*
 system.post('/clearscratch', function(req, res) {
     const db = req.app.locals.db;
 
@@ -60,28 +62,16 @@ system.post('/clearscratch', function(req, res) {
     });
 
 });
+*/
 
 system.get('/scratchpad', function(req, res) {
-    const db = req.app.locals.db;
-
+    console.log(filename,": Endpoint request: /system/scratchpad");
+    
     // build sql statement with variable placeholders
-    const sql = 'SELECT * FROM spells s';
+    const sql = 'SELECT * FROM scratchpad s';
+    params = [];
 
-    // format to protect against sql injection
-    const preparedQuery = db.format(sql);
-
-    db.query(sql, function(err, data, fields) {
-        if (err) throw err;
-        res.json(data);
-    })
+    selectQuery(filename,sql,params,req,res);
 });
-
-    
-system.get('/errortest/:errcode', function (req, res) {
-    // in this endpoint we'll listen for what error they wish to return, and return that error code, ie: 200, 401, 403, 500, etc
-    const error = req.params.errcode;
-    res.status(error).send("Check devtools/network for appropriate error response");
-})
-    
 
 module.exports = system;
