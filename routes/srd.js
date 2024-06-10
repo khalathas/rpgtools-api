@@ -7,6 +7,7 @@ const filename = "srd.js"; // for logging purposes
 
 
 srd.get('/classes', function(req, res) {
+    console.log(filename,": Request from: ",req.ip);
     console.log(filename,": Endpoint request: /srd/classes");
 
     // build sql statement with variable placeholders
