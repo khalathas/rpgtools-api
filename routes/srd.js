@@ -1,98 +1,74 @@
+// Main routes file for SRD specific endpoints
+
 const express = require('express');
+const { selectQuery } = require('../utils.js');
 const srd = express.Router();
 const filename = "srd.js"; // for logging purposes
 
-srd.get('/classes', function(req, res) {
-    const db = req.app.locals.db;
 
+srd.get('/classes', function(req, res) {
+    console.log(filename,": Request from: ",req.ip);
+    console.log(filename,": Endpoint request: /srd/classes");
+
+    // build sql statement with variable placeholders
     const sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
-    const preparedQuery = db.format(sql);
-    db.query(preparedQuery, function(err, data, fields) {
-        if (err) throw err;
-        console.log(filename,": Class list route sent")
-        res.json(data);
-    });
+    const params = [];
+
+    //send query to select function
+    selectQuery(filename,sql,params,req,res);
 });
 
 srd.get('/spells', function(req, res) {
-    const db = req.app.locals.db;
+    console.log(filename,": Endpoint request: /srd/spells");
 
     // build sql statement with variable placeholders
     const sql = 'SELECT * FROM spells s';
+    const params = [];
 
-    // format to protect against sql injection
-    const preparedQuery = db.format(sql);
-
-    db.query(preparedQuery, function(err, data, fields) {
-        if (err) throw err;
-        res.json(data);
-    })
+    selectQuery(filename,sql,params,req,res);
 });
 
 srd.get('/classbybookID/:bookID', function(req, res) {
-    const db = req.app.locals.db;
+    console.log(filename,": Endpoint request: /srd/classbybookID");
 
     // store parameters in variables
     const bookID = req.params.bookID;
 
     // build sql statement with variable placeholders
     const sql = 'SELECT c.name as "Class", b.name as "Source Book" FROM classes c left join sourceBooks b on c.sourcebook = b.id where b.id = ? order by c.name asc';
+    const params = [bookID];
 
-    // format to protect against sql injection
-    const preparedQuery = db.format(sql, [bookID]);
-
-    db.query(preparedQuery, function(err, data, fields) {
-        if (err) throw err;
-        res.json(data);
-    })
+    selectQuery(filename,sql,params,req,res);
 });
 
 //get spell by ID
 srd.get('/spellID/:spellID', function(req, res) {
-    const db = req.app.locals.db;
+    console.log(filename,": Endpoint request: /srd/spellID");
 
     // store parameters in variables
     const spellID = req.params.spellID;
 
     // build sql statement with variable placeholders
     const sql = 'SELECT * FROM spells s where s.id = ?';
+    const params = [spellID];
 
-    // format to protect against sql injection
-    const preparedQuery = db.format(sql, [spellID]);
-
-    db.query(preparedQuery, function(err, data, fields) {
-        if (err) throw err;
-        res.json(data);
-    })
+    selectQuery(filename,sql,params,req,res);
 });
 
 //Single parameter spell search
 srd.get('/spellsbyfield/:field/:value', function(req, res) {
-    const db = req.app.locals.db;
+    console.log(filename,": Endpoint request: /srd/spellsbyfield");
 
   // store parameters in variables
     const field = req.params.field;
     const value = req.params.value;
-    const values = [field, ['%' + value + '%']];
+    const params = [field, ['%' + value + '%']];
     
 
     // build sql statement with variable placeholders
     const sql = 'SELECT * FROM spells s where ?? LIKE ?';
 
-    // format to protect against sql injection
-    const preparedQuery = db.format(sql, values);
-
-    db.query(preparedQuery, function(err, data, fields) {
-        if (err) {
-            res.send({
-                _sql: sql,
-                _values: values,
-                _err: err
-            })
-            throw err;}
-        console.log("Query: ",preparedQuery);
-        res.json(data);
-    })
+    selectQuery(filename,sql,params,req,res);
 });
 
 
