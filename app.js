@@ -4,21 +4,17 @@
 const express = require('express'); 
 const app = express(); //create app
 const cors = require('cors'); //add cors module
-const path = require('path'); //add path module
 const mysql = require('mysql'); //add mysql2 module
 const fs = require('fs'); //add filesystem module
 const bodyParser = require('body-parser');
 const readline = require('readline'); //add readline input module for creating config
-// const utils = require('./utils.js'); // custom functions
-const filename = "app.js"; // for logging purposes
+const path = require('path'); //add path module
+const filename = path.basename(__filename); // for logging purposes
 
 
-//console.log(filename,": Defining net");
-//const { createConnection } = require('net');
 
 // create empty config object for later
 let config = {};
-let db = {};
 
 console.log(filename,": Entering main function");
 
@@ -85,7 +81,11 @@ function main() {
 
         function writeConfig(configTemplate) {
             fs.writeFile('config.json', JSON.stringify(configTemplate, null, 4), (err) => {
-                if (err) throw err;console.log('Configuration saved to config.json');
+                if (err) {
+                    rl.close();
+                    throw err;
+                }
+                console.log('Configuration saved to config.json');
                 rl.close();
             })
         }
@@ -95,28 +95,25 @@ function main() {
 
         if (fs.existsSync('config.json')) {
             console.log(filename,": Loading config.json");
-            configFileContents = fs.readFileSync('config.json', 'utf8');
+            const configFileContents = fs.readFileSync('config.json', 'utf8');
             //console.log(filename,": Config File Contents: ", configFileContents);
             config = JSON.parse(configFileContents);
             resolve(config);
         } else {
             console.log('No config.json found. Starting first run initialization...');
-            config = promptForConfig();
+            config = promptForConfig(); // consider promptForConfig().then(resolve); syntax as a cleanup item
             resolve(config);
         }
-
-        // End promise
-
-    }).finally(() => {
         console.log(filename,": Setup complete");
 
+        // End promise
 
     }).then(
         function(result) {
             const config = result;
          
             // new, connection pooling
-            dbpool = mysql.createPool({
+            const dbpool = mysql.createPool({
                 connectionLimit : 10,
                 host : config.db.host,
                 user : config.db.user,
@@ -161,6 +158,11 @@ function main() {
             // grab port as argument from commandline, else default to port in config file
             // note to self, add checking to ensure argv[2] is numeric in valid port range
             // temporarily disabled for heroku port binding
+
+            /* refactor to be cleaner
+            let port;
+            let truePort;
+
             if (process.argv[2]) {
                 port = process.argv[2];
             } else {
@@ -172,10 +174,13 @@ function main() {
             } else { 
                 truePort = port;
             }
+            */
+
+            const port = process.env.PORT || process.argv[2] || 4000;
 
             // modified for heroku
-            app.listen(truePort, () => {
-                console.log(filename,": API is ready to rock on port " + truePort);
+            app.listen(port, () => {
+                console.log(filename,": API is ready to rock on port " + port);
             });
 
         },
@@ -185,6 +190,5 @@ function main() {
     );
 
 };
-
 
 main();

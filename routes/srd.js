@@ -3,11 +3,12 @@
 const express = require('express');
 const { selectQuery } = require('../utils.js');
 const srd = express.Router();
-const filename = "srd.js"; // for logging purposes
+const path = require('path');
+const filename = path.basename(__filename); // for logging purposes
 
 
 srd.get('/classes', function(req, res) {
-    console.log(filename,": Request from: ",req.ip);
+//    console.log(filename,": Request from: ",req.ip);
     console.log(filename,": Endpoint request: /srd/classes");
 
     // build sql statement with variable placeholders

@@ -4,7 +4,8 @@
 const express = require('express');
 const system = express.Router();
 const { selectQuery } = require('../utils.js');
-const filename = "system.js"; // for logging purposes
+const path = require('path');
+const filename = path.basename(__filename); // for logging purposes
 
 system.get('/test', function(req, res) {
     res.send("Test success, api is listening - using path in system/test");
@@ -20,6 +21,25 @@ system.get('/tables', function(req, res) {
 })
 
 //scratchpad can be rewritten as srd.route('/scratchpad').get((req,res) => {}).post((req,res) => {});
+// tutorial https://www.geeksforgeeks.org/express-js-router-route-function/
+/* example:
+// Multiple routing
+router.route('/user')
+    .get(function (req, res, next) {
+        console.log("GET request called");
+        res.end();
+    })
+    .post(function (req, res, next) {
+        console.log("POST request called");
+        res.end();
+    })
+    .put(function (req, res, next) {
+        console.log("PUT request called");
+        res.end();
+    });
+
+*/
+
 /*
 system.post('/scratchpad', function(req, res) {
     const db = req.app.locals.db;

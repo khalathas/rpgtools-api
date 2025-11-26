@@ -1,3 +1,6 @@
+const path = require('path');
+const filename = path.basename(__filename); // for logging purposes
+
 // Reusable functions and methods for use elsewhere in app
 
 // connection wrapper to get
@@ -6,6 +9,7 @@ function connectionWrapper() {
 }
 
 function selectQuery(filename,sql,params = [],req,res) {
+    const dbpool = req.app.locals.db;
     dbpool.getConnection(function(err,conn) {
         if (err) {
             console.log(filename,": Connection Error!");
@@ -29,6 +33,19 @@ function selectQuery(filename,sql,params = [],req,res) {
 
 }
 
+/* Placeholders
+function insertQuery() {
+
+}
+
+function updateQuery() {
+
+}
+
+function deleteQuery() {
+
+}
+*/
 
 module.exports = {
     selectQuery
