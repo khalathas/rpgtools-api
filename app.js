@@ -149,11 +149,15 @@ function main() {
             console.log(filename,": Defining Users");
             const usersRouter =require('./routes/users');
 
+            console.log(filename,": Defining Health");
+            const healthRouter = require('./routes/health');
+
             //hook up routers
             console.log(filename,": Hooking up routes");
             app.use('/system', systemRouter); //system functions
             app.use('/srd', srdRouter); //srd functions
             app.use('/users', usersRouter); //user functions
+            app.use('/api', healthRouter); //health check
 
             // grab port as argument from commandline, else default to port in config file
             // note to self, add checking to ensure argv[2] is numeric in valid port range
