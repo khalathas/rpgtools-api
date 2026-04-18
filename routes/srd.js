@@ -5,7 +5,7 @@ const { selectQuery } = require('../utils.js');
 const srd = express.Router();
 const path = require('path');
 const filename = path.basename(__filename); // for logging purposes
-const { log } = require('./utils.js'); //import log function from utils.js
+const { log } = require('../utils.js'); //import log function from utils.js
 
 
 srd.get('/classes', function(req, res) {

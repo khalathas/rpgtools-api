@@ -23,5 +23,10 @@
     "mysql": "^2.18.1",
     "nodemon": "^2.0.19",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.1",
+    "globals": "^17.5.0"
   }
 }

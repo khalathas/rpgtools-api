@@ -1,7 +1,7 @@
 const mysql = require('mysql'); //add mysql2 module
 const path = require('path'); //add path module
 const filename = path.basename(__filename); // for logging purposes
-const { log } = require('./utils.js'); //import log function from utils.js
+const { log } = require('../utils.js'); //import log function from utils.js
 
 
 function createPool(config) {

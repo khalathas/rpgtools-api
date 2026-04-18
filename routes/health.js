@@ -4,7 +4,7 @@ const express = require('express');
 const health = express.Router();
 const path = require('path');
 const filename = path.basename(__filename);
-const { log } = require('./utils.js'); //import log function from utils.js
+const { log } = require('../utils.js'); //import log function from utils.js
 
 health.get('/health', function(req, res) {
     log(filename, ": Endpoint request: /api/health");
