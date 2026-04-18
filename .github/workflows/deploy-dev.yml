@@ -11,8 +11,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Pull latest code
+        run: cd ~/development/rpgtools-api && git pull
       - name: Install dependencies
-        run: npm install
+        run: cd ~/development/rpgtools-api && npm install
       - name: Restart app
         run: pm2 restart axiom
       - name: Wait for app to start
