@@ -3,3 +3,10 @@ config.json.heroku
 config.json.cronos
 node_modules/
 devnotes/
+.claude/
+api-endpoints-design.txt
+database-design.txt
+feature-suggestions.txt
+sprint-1-checklist.txt
+external_data/
+logs/

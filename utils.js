@@ -1,36 +1,30 @@
-const path = require('path');
-const filename = path.basename(__filename); // for logging purposes
-
-// Reusable functions and methods for use elsewhere in app
-
-// connection wrapper to get
-function connectionWrapper() {
-    console.log(filename,"placeholder");
-}
-
 function selectQuery(filename,sql,params = [],req,res) {
     const dbpool = req.app.locals.db;
     dbpool.getConnection(function(err,conn) {
         if (err) {
-            console.log(filename,": Connection Error!");
+            log(filename,": Connection Error!");
             throw err;
         }
-        console.log(filename,": Connection Established");
+        log(filename,": Connection Established");
 
         const preparedQuery = conn.format(sql, params);
 
-        console.log(filename,": sendQuery function invoked, value passed: ",preparedQuery);
+        log(filename,": sendQuery function invoked, value passed: ",preparedQuery);
 
-        // console.log(filename,": Sending query: ",preparedQuery);
-        conn.query(preparedQuery, function(err, data, fields) {
+        conn.query(preparedQuery, function(err, data, _fields) {
             if (err) throw err;
             res.json(data);
             conn.release();
-            console.log(filename,": Connection Released")
+            log(filename,": Connection Released")
         });
 
     });
 
+}
+
+function log(...args) {
+    // eslint-disable-next-line no-console
+    if (process.env.NODE_ENV !== 'production') console.log(...args);
 }
 
 /* Placeholders
@@ -48,5 +42,5 @@ function deleteQuery() {
 */
 
 module.exports = {
-    selectQuery
+    selectQuery, log
 }

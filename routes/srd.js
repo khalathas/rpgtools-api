@@ -5,11 +5,11 @@ const { selectQuery } = require('../utils.js');
 const srd = express.Router();
 const path = require('path');
 const filename = path.basename(__filename); // for logging purposes
+const { log } = require('../utils.js'); //import log function from utils.js
 
 
 srd.get('/classes', function(req, res) {
-//    console.log(filename,": Request from: ",req.ip);
-    console.log(filename,": Endpoint request: /srd/classes");
+    log(filename,": Endpoint request: /srd/classes");
 
     // build sql statement with variable placeholders
     const sql = 'SELECT c.id, c.name as "Name", b.name as "Sourcebook" FROM classes c left join sourceBooks b on c.sourcebook = b.id order by c.name asc';
@@ -20,7 +20,7 @@ srd.get('/classes', function(req, res) {
 });
 
 srd.get('/spells', function(req, res) {
-    console.log(filename,": Endpoint request: /srd/spells");
+    log(filename,": Endpoint request: /srd/spells");
 
     // build sql statement with variable placeholders
     const sql = 'SELECT * FROM spells s';
@@ -30,7 +30,7 @@ srd.get('/spells', function(req, res) {
 });
 
 srd.get('/classbybookID/:bookID', function(req, res) {
-    console.log(filename,": Endpoint request: /srd/classbybookID");
+    log(filename,": Endpoint request: /srd/classbybookID");
 
     // store parameters in variables
     const bookID = req.params.bookID;
@@ -44,7 +44,7 @@ srd.get('/classbybookID/:bookID', function(req, res) {
 
 //get spell by ID
 srd.get('/spellID/:spellID', function(req, res) {
-    console.log(filename,": Endpoint request: /srd/spellID");
+    log(filename,": Endpoint request: /srd/spellID");
 
     // store parameters in variables
     const spellID = req.params.spellID;
@@ -58,7 +58,7 @@ srd.get('/spellID/:spellID', function(req, res) {
 
 //Single parameter spell search
 srd.get('/spellsbyfield/:field/:value', function(req, res) {
-    console.log(filename,": Endpoint request: /srd/spellsbyfield");
+    log(filename,": Endpoint request: /srd/spellsbyfield");
 
   // store parameters in variables
     const field = req.params.field;
@@ -71,16 +71,6 @@ srd.get('/spellsbyfield/:field/:value', function(req, res) {
 
     selectQuery(filename,sql,params,req,res);
 });
-
-
-// WIP add spells request endpoint, intended to take a json object of spell data, multiple spells
-srd.post('/addSpells', function(req, res) {
-
-    console.log("Add Spells endpoint invoked.");
-
-    res.send("Add Spells endpoint invoked.");
-});
-
 
 
 module.exports = srd
