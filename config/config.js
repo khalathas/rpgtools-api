@@ -2,6 +2,7 @@ const fs = require('fs'); //add filesystem module
 const readline = require('readline'); //add readline input module for creating config
 const path = require('path'); //add path module
 const filename = path.basename(__filename); // for logging purposes
+const { log } = require('./utils.js'); //import log function from utils.js
 
 // define templates and structures
 // create config json template
@@ -24,19 +25,18 @@ const rl = readline.createInterface({
 
 async function loadConfig() {
     // Begin the load/create config process
-    console.log(filename,": Checking config file");
+    log(filename,": Checking config file");
 
     if (fs.existsSync('config.json')) {
-        console.log(filename,": Loading config.json");
+        log(filename,": Loading config.json");
         const configFileContents = fs.readFileSync('config.json', 'utf8');
-        //console.log(filename,": Config File Contents: ", configFileContents);
         const config = JSON.parse(configFileContents);
-        console.log(filename,": Config complete");
+        log(filename,": Config complete");
         return config;
     } else {
-        console.log('No config.json found. Starting first run initialization...');
+        log('No config.json found. Starting first run initialization...');
         const config = await promptForConfig(); // consider promptForConfig().then(resolve); syntax as a cleanup item
-        console.log(filename,": Config complete");
+        log(filename,": Config complete");
         return config;
     }
 
@@ -83,7 +83,7 @@ function writeConfig(configTemplate) {
             rl.close();
             throw err;
         }
-        console.log('Configuration saved to config.json');
+        log('Configuration saved to config.json');
         rl.close();
     })
 }

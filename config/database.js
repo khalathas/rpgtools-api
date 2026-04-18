@@ -1,6 +1,7 @@
 const mysql = require('mysql'); //add mysql2 module
 const path = require('path'); //add path module
 const filename = path.basename(__filename); // for logging purposes
+const { log } = require('./utils.js'); //import log function from utils.js
 
 
 function createPool(config) {
@@ -14,7 +15,7 @@ const dbpool = mysql.createPool({
     password : config.db.pass,
     database : config.db.dbname
 });
-console.log(filename,": Connection Pool created");
+log(filename,": Connection Pool created");
 return dbpool;
 }
 
