@@ -20,6 +20,6 @@ jobs:
       - name: Health check
         run: curl -f http://localhost:4000/api/health
       - name: Run Mabl tests
-        run: mabl deployments create --environment-id aKNMuGqhBb9EGkNJgrZexg-e --app-id s23lZsfNpElb60CJpBflVw-a --labels rpgtoolsplan
+        run: mabl deployments create -e aKNMuGqhBb9EGkNJgrZexg-e -a s23lZsfNpElb60CJpBflVw-a -l rpgtoolsplan
         env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
