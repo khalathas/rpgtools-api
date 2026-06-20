@@ -15,18 +15,16 @@
   "author": "Justin McClellan",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.20.0",
-    "connect-roles": "^3.1.2",
+    "@axiom/aegis": "file:../aegis",
     "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
     "express": "^4.18.1",
-    "fs": "^0.0.1-security",
-    "mysql": "^2.18.1",
-    "nodemon": "^2.0.19",
-    "path": "^0.12.7"
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.2.1",
-    "globals": "^17.5.0"
+    "globals": "^17.5.0",
+    "nodemon": "^3.1.14"
   }
 }
