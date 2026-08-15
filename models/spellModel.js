@@ -87,16 +87,19 @@ async function getSpells(pool, opts = {}) {
 
 async function getSpellFacets(pool) {
     const fields = ['school', 'subschool', 'components', 'cast_time', '`range`', 'target', 'area', 'effect', 'duration', 'saving_throw', 'spell_resist'];
-    const results = await Promise.all(
-        fields.map(field => executeQuery(pool, `SELECT DISTINCT ${field} AS value FROM spells WHERE ${field} IS NOT NULL AND ${field} != '' ORDER BY ${field} ASC`))
-    );
+    const sql = fields.map(field => {const label = field.replace(/`/g, '');
+            return `SELECT DISTINCT '${label}' AS facet, ${field} AS value FROM spells WHERE ${field} IS NOT NULL AND ${field} != ''`;
+        }).join('\nUNION ALL\n') + '\nORDER BY facet, value ASC';
 
+    const rows = await executeQuery(pool, sql);
     const facets = {};
-
-    fields.forEach((field, index) => {
-        facets[field.replace(/`/g, '')] = results[index].map(row => row.value);
+    fields.forEach(field => {
+        facets[field.replace(/`/g, '')] = [];
     });
-
+    rows.forEach(row => {
+        facets[row.facet].push(row.value);
+    });
+        
     return facets;
 }
 
