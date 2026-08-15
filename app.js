@@ -1,5 +1,8 @@
 // Main app file for test api
 
+// get environement
+require('dotenv').config();
+
 // create express and initialize modules
 const express = require('express'); 
 const app = express(); //create app
@@ -40,15 +43,18 @@ async function main() {
 
     log(filename,": Defining Routes");
 
-    log(filename,": Defining SRD");
+    log(filename,": Defining Rules");
     const rulesRouter = require('./routes/rules');
     log(filename,": Defining System");
     const systemRouter = require('./routes/system');
+    log(filename,": Defining Admin");
+    const adminRouter = require('./routes/admin');
 
     //hook up routers
     log(filename,": Hooking up routes");
     app.use('/rules', rulesRouter); //rules functions
     app.use('/api', systemRouter); //system functions
+    app.use('/admin', adminRouter); //admin functions
 
     // grab port as argument from commandline, else default to port in config file
     // note to self, add checking to ensure argv[2] is numeric in valid port range

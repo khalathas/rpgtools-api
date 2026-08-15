@@ -20,15 +20,34 @@ async function getAll(req, res) {
 
 async function getAll(req, res) {
     const pool = req.app.locals.db;
+
     try {
-        const data = await spellModel.getSpells(pool);
-        if (!data.length) return res.status(404).json(errorResponse("NOT_FOUND", "No spells found"));
-        res.json(successResponse(data, { count: data.length }));
+        const {rows, total, page, page_size} = await spellModel.getSpells(pool, req.query);
+
+        if (!rows.length) return res.status(404).json(errorResponse("NOT_FOUND", "No spells found"));
+        res.json(successResponse(rows, {
+            count: rows.length,
+            page,
+            page_size,
+            total_count: total,
+            total_pages: Math.ceil(total / page_size)
+        }));
     } catch (err) {
         log(filename, err);
         res.status(500).json(errorResponse('DB_ERROR', 'Database error'));
     }
 }
+
+async function getFacets(req, res) {
+    const pool = req.app.locals.db;
+    try {
+        res.json(successResponse(await spellModel.getSpellFacets(pool)));
+    } catch (err) {
+        log(filename, err);
+        res.status(500).json(errorResponse('DB_ERROR', 'Database error'));
+    }
+}
+
 
 async function getById(req, res) {
     const pool = req.app.locals.db;
@@ -91,6 +110,7 @@ async function handleSpellRequest(modelFn, params, message) {}
 
 module.exports = {
     getAll,
+    getFacets,
     getById,
     getByField
 }

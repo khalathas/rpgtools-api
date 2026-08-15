@@ -1,30 +1,72 @@
-// Main routes file for SRD specific endpoints
+// Main routes file for rules specific endpoints
 
 const express = require('express');
-const srd = express.Router();
+const rules = express.Router();
 const spellController = require('../controllers/spellController.js');
 const classController = require('../controllers/classController.js');
+const featController = require('../controllers/featController.js');
+const skillController = require('../controllers/skillController.js');
+const referenceController = require('../controllers/referenceController.js');
 
-srd.route('/spells')
+// Spell routes
+rules.route('/spells')
     .get(spellController.getAll);
 
-srd.route('/spells/id/:id')
+rules.route('/spells/facets')
+    .get(spellController.getFacets);
+
+rules.route('/spells/:id')
     .get(spellController.getById);
 
-srd.route('/spells/field/:field/:value')
+rules.route('/spells/field/:field/:value')
     .get(spellController.getByField);
 
-// srd.route('/spells/class/:className') // not ready yet
+// rules.route('/spells/class/:className') // not ready yet
 
-// srd.route('/spells/class/:className/level/:level') // not ready yet
+// rules.route('/spells/class/:className/level/:level') // not ready yet
 
-
-srd.route('/classes')
+// Class routes
+rules.route('/classes')
     .get(classController.getAll);
 
-srd.route('/classes/book/:bookId')
+rules.route('/classes/book/:bookId')
     .get(classController.getByBookId);
 
-// srd.route('/sourcebooks') // not ready yet
+// Feat routes
+rules.route('/feats')
+    .get(featController.getAll)
+    .post(featController.create);
 
-module.exports = srd
+rules.route('/feats/type/:type')
+    .get(featController.getByType);
+
+rules.route('/feats/facets')
+    .get(featController.getFacets);
+
+rules.route('/feats/:id')
+    .get(featController.getById)
+    .patch(featController.updateById)
+    .delete(featController.deleteById);
+
+rules.route('/feats/:id/prereqs')
+    .post(featController.addPrereq);
+
+rules.route('/feats/:id/prereqs/:prereqId')
+    .patch(featController.updatePrereqById)
+    .delete(featController.deletePrereqById);
+
+// Skill routes
+rules.route('/skills')
+    .get(skillController.getAll);
+
+rules.route('/skills/:id')
+    .get(skillController.getById);
+
+// Book routes
+rules.route('/sourcebooks')
+    .get(referenceController.getAllSourceBooks);
+
+rules.route('/sourcebooks/:id')
+    .get(referenceController.getSourceBookById);
+
+module.exports = rules
