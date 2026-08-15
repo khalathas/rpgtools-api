@@ -3,14 +3,39 @@ const PATCHABLE = ['name', 'feat_type', 'prerequisites', 'benefit', 'normal', 's
 const PREREQ_PATCHABLE = ['prereq_type', 'prereq_value', 'prereq_min', 'prereq_key', 'prereq_feat_id', 'prereq_skill_id'];
 
 
-async function getFeats(pool) {
-
-    // build sql statement with variable placeholders
-    const sql = 'SELECT * FROM feats f';
+async function getFeats(pool, opts = {}) {
+    const { page = 1, page_size = 50, name, feat_type, source_book_id } = opts;
+    const where = [];
     const params = [];
+    if (name) {
+        where.push('f.name LIKE ?');
+        params.push(`%${name}%`);
+    }
+    if (feat_type) {
+        where.push('f.feat_type = ?');
+        params.push(feat_type);
+    }
+    if (source_book_id) {
+        where.push('f.source_book_id = ?');
+        params.push(source_book_id);
+    }
 
-    return executeQuery(pool,sql,params);
+    const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : '';
+    const safePage = Number.isInteger(+page) && +page > 0 ? +page : 1;
+    const safePageSize = Math.min(Number.isInteger(+page_size) && +page_size > 0 ? +page_size : 50, 100);
+    const offset = (safePage - 1) * safePageSize;
 
+    const [rows, countResult] = await Promise.all([
+        executeQuery(pool, `SELECT * FROM feats f ${whereClause} ORDER BY f.name ASC LIMIT ? OFFSET ?`, [...params, safePageSize, offset]),
+        executeQuery(pool, `SELECT COUNT(*) as total FROM feats f ${whereClause}`, params)
+    ]);
+
+    return { rows, total: countResult[0].total, page: safePage, page_size: safePageSize };
+}
+
+async function getFeatFacets(pool) {
+    const rows = await executeQuery(pool, `SELECT DISTINCT feat_type AS value FROM feats WHERE feat_type IS NOT NULL AND feat_type != '' ORDER BY feat_type ASC`);
+    return { feat_type: rows.map(row => row.value) };
 }
 
 async function getFeatById(pool, id) {
@@ -107,6 +132,7 @@ module.exports = {
     getFeats,
     getFeatById,
     getFeatsByType,
+    getFeatFacets,
     createFeat,
     updateFeat,
     deleteFeat,

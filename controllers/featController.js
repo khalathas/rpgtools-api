@@ -7,9 +7,25 @@ const { successResponse, errorResponse } = require('../utils/dbUtils');
 async function getAll(req, res) {
     const pool = req.app.locals.db;
     try {
-        const data = await featModel.getFeats(pool);
-        if (!data.length) return res.status(404).json(errorResponse("NOT_FOUND", "No feats found"));
-        res.json(successResponse(data, { count: data.length }));
+        const { rows, total, page, page_size } = await featModel.getFeats(pool, req.query);
+        if (!rows.length) return res.status(404).json(errorResponse("NOT_FOUND", "No feats found"));
+        res.json(successResponse(rows, {
+            count: rows.length,
+            page,
+            page_size,
+            total_count: total,
+            total_pages: Math.ceil(total / page_size)
+        }))
+    } catch (err) {
+        log(filename, err);
+        res.status(500).json(errorResponse('DB_ERROR', 'Database error'));
+    }
+}
+
+async function getFacets(req, res) {
+    const pool = req.app.locals.db;
+    try {
+        res.json(successResponse(await featModel.getFeatFacets(pool)));
     } catch (err) {
         log(filename, err);
         res.status(500).json(errorResponse('DB_ERROR', 'Database error'));
@@ -142,6 +158,7 @@ async function deletePrereqById(req, res) {
 
 module.exports = { 
     getAll,
+    getFacets,
     getById,
     create,
     getByType,

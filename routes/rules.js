@@ -12,6 +12,9 @@ const referenceController = require('../controllers/referenceController.js');
 rules.route('/spells')
     .get(spellController.getAll);
 
+rules.route('/spells/facets')
+    .get(spellController.getFacets);
+
 rules.route('/spells/:id')
     .get(spellController.getById);
 
@@ -36,6 +39,9 @@ rules.route('/feats')
 
 rules.route('/feats/type/:type')
     .get(featController.getByType);
+
+rules.route('/feats/facets')
+    .get(featController.getFacets);
 
 rules.route('/feats/:id')
     .get(featController.getById)
